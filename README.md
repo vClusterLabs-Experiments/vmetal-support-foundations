@@ -7,22 +7,21 @@ A bottom-up path to understanding the full stack vmetal runs on. The goal is con
 - Work milestones in order. Each assumes the prior one's exit artifact exists.
 - Read each milestone's `## Reading list` and navigate the linked docs yourself. The briefs intentionally do not include copy-pasteable commands.
 - The durable artifact at every milestone is `notes.md` — your written answers to the conceptual questions. Configs and scripts are throwaway.
-- Each milestone declares an expected reading and lab budget; ignore links beyond it.
 - Only M7 is optional; the `.5` interludes (M3.5, M4.5) are required — M5 depends on both.
 
 ## Milestones
 
-| # | File | One-line summary | Time |
-|---|---|---|---|
-| 1 | [milestone-01-bmc.md](./milestone-01-bmc.md) | Drive a Redfish API to power a fake server on/off. Learn the BMC contract. | ~9h (incl. ~4h one-time scaffolding setup) |
-| 2 | [milestone-02-netboot.md](./milestone-02-netboot.md) | PXE / DHCP / TFTP / iPXE. Boot a diskless node off the network. | ~10h |
-| 3 | [milestone-03-os-provisioning.md](./milestone-03-os-provisioning.md) | Deliver Talos or Flatcar with a config-over-HTTP. Generic image becomes a specific node. | ~8h |
-| 3.5 | [milestone-03-5-inventory.md](./milestone-03-5-inventory.md) | How does the orchestrator learn what hardware exists? | ~6h |
-| 4 | [milestone-04-cluster-bootstrap.md](./milestone-04-cluster-bootstrap.md) | Bring up single-node K8s and join a PXE-provisioned worker, by hand. | ~10h |
-| 4.5 | [milestone-04-5-observability.md](./milestone-04-5-observability.md) | Induce failures across the chain. Build diagnostic runbooks. | ~5h |
-| 5 | [milestone-05-capi-metal3.md](./milestone-05-capi-metal3.md) | Replace every manual step with declarative CRs. CAPI + Metal3 + Ironic. | ~13h |
-| 6 | [milestone-06-vmetal.md](./milestone-06-vmetal.md) | Install vmetal. Map every CRD to a layer below. Articulate the delta. | ~8h |
-| 7 | [milestone-07-day2.md](./milestone-07-day2.md) | *(optional)* Upgrades, decommission, credential rotation. Where real fleet pain lives. | ~9h per exercise |
+| # | File | One-line summary |
+|---|---|---|
+| 1 | [milestone-01-bmc.md](./milestone-01-bmc.md) | Drive a Redfish API to power a fake server on/off. Learn the BMC contract. |
+| 2 | [milestone-02-netboot.md](./milestone-02-netboot.md) | PXE / DHCP / TFTP / iPXE. Boot a diskless node off the network. |
+| 3 | [milestone-03-os-provisioning.md](./milestone-03-os-provisioning.md) | Deliver Talos or Flatcar with a config-over-HTTP. Generic image becomes a specific node. |
+| 3.5 | [milestone-03-5-inventory.md](./milestone-03-5-inventory.md) | How does the orchestrator learn what hardware exists? |
+| 4 | [milestone-04-cluster-bootstrap.md](./milestone-04-cluster-bootstrap.md) | Bring up single-node K8s and join a PXE-provisioned worker, by hand. |
+| 4.5 | [milestone-04-5-observability.md](./milestone-04-5-observability.md) | Induce failures across the chain. Build diagnostic runbooks. |
+| 5 | [milestone-05-capi-metal3.md](./milestone-05-capi-metal3.md) | Replace every manual step with declarative CRs. CAPI + Metal3 + Ironic. |
+| 6 | [milestone-06-vmetal.md](./milestone-06-vmetal.md) | Install vmetal. Map every CRD to a layer below. Articulate the delta. |
+| 7 | [milestone-07-day2.md](./milestone-07-day2.md) | *(optional)* Upgrades, decommission, credential rotation. Where real fleet pain lives. |
 
 ## Why this order
 
