@@ -61,6 +61,12 @@ The curriculum (briefs + learner-workspace template) lives at the repo root. You
         └── ...
 ```
 
+## License
+
+- **Curriculum briefs** (`README.md`, `milestone-*.md`) — [CC BY-NC 4.0](./LICENSE). Non-commercial use only.
+- **Learner workspace template** (`_template/`) — [MIT](./_template/LICENSE). Use freely, including commercial learning contexts.
+- **No warranty**, express or implied, in either case.
+
 ---
 
 Last Updated: 2026-04-29

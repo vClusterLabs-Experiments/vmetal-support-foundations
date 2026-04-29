@@ -1,0 +1,33 @@
+# License
+
+Copyright (c) 2026 vCluster Labs, Inc.
+
+## Scope
+
+This license applies to the **curriculum briefs** in this repository: `README.md` and every `milestone-*.md` at the project root.
+
+The contents of `_template/` are licensed separately under the **MIT License** so that learner workspaces and personal notes derived from the template are not encumbered by the non-commercial restriction below. See `_template/LICENSE` for those terms.
+
+## License (curriculum briefs)
+
+The curriculum briefs are licensed under the Creative Commons Attribution-NonCommercial 4.0 International License (CC BY-NC 4.0).
+
+Full legal text: https://creativecommons.org/licenses/by-nc/4.0/legalcode
+Human-readable summary: https://creativecommons.org/licenses/by-nc/4.0/
+
+## You may
+
+- **Share** — copy and redistribute the material in any medium or format
+- **Adapt** — remix, transform, and build upon the material
+
+…provided you give appropriate credit, link to the license, and indicate if changes were made.
+
+## You may NOT
+
+- **Use the material for commercial purposes.** "Commercial purposes" means use that is primarily intended for or directed toward commercial advantage or monetary compensation. Internal training within a commercial organization is not permitted under this license — contact the copyright holder for a separate commercial license if needed.
+
+## Disclaimer of warranties
+
+THIS WORK IS PROVIDED "AS IS," WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, ACCURACY, OR NON-INFRINGEMENT. THE LICENSOR DISCLAIMS ALL LIABILITY FOR ANY DIRECT, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING FROM USE OF THIS WORK. THE LINKED EXTERNAL DOCUMENTS, COMMANDS, AND CONFIGURATION SUGGESTIONS ARE EDUCATIONAL REFERENCES, NOT VERIFIED RUNBOOKS — RUN NOTHING IN PRODUCTION WITHOUT INDEPENDENT VERIFICATION.
+
+The above clauses are summary statements; the full CC BY-NC 4.0 legal code (linked above) governs in case of any conflict.

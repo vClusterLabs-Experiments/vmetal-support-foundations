@@ -53,4 +53,10 @@ For each milestone, keep two files open:
 
 ---
 
+## License
+
+This `_template/` directory is licensed under the [MIT License](./LICENSE). Notes and artifacts you produce by copying it into your own workspace are yours, unencumbered by the curriculum's non-commercial restriction.
+
+---
+
 Last Updated: 2026-04-29
