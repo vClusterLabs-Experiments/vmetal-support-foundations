@@ -1,0 +1,20 @@
+# Learner workspace — actual answers and scaffolding live here; not part of the published curriculum
+lab/
+
+# Per-learner artifact directories (created at the curriculum root by some learners)
+/milestone-01/
+/milestone-02/
+/milestone-03/
+/milestone-03-5/
+/milestone-04/
+/milestone-04-5/
+/milestone-05/
+/milestone-06/
+/milestone-07/
+
+# Common scratch
+*.swp
+.DS_Store
+
+# Claude Code session state (local to this machine)
+.claude/
