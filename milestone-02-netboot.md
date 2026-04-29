@@ -2,8 +2,6 @@
 
 **Goal:** Take the diskless server from Milestone 1 and make it boot something, anything, off the network. You're not installing an OS yet. The conceptual payoff is understanding how a machine that knows nothing about itself except its MAC address ends up executing code you served it.
 
-**Expected: ~4h reading + ~6h lab.**
-
 ## What you're actually learning
 
 - **The PXE handshake**: how a NIC ROM, with no disk and no config, finds a bootloader on a network it has never seen before.

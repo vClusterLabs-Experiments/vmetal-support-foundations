@@ -2,8 +2,6 @@
 
 **Goal:** Drive a Redfish API to power one fake server on/off and read its current state. The contract you exercise here is what every BMC, real or simulated, exposes.
 
-**Expected: ~2h reading + ~3h BMC lab + ~4h one-time scaffolding setup (Lima / libvirt / sushy-tools, reused for every later milestone).**
-
 ## What you're actually learning
 
 - **The BMC as a separate compute element**: its own network, its own credentials, its own state, capable of controlling a host that is powered off or wedged.

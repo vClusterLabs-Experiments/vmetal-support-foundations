@@ -4,8 +4,6 @@
 
 **Goal:** Confront the question every bare-metal stack glosses over: how does the orchestrator *learn* what hardware exists? Until now you've been hand-pointing tools at `node01`. Real fleets have thousands of nodes and no human typing them in.
 
-**Expected: ~2h reading + ~4h lab.**
-
 ## What you're actually learning
 
 - **The discovery problem**: a server in a rack has no way to announce itself except by powering on and emitting DHCP. Everything else is manual data entry or out-of-band aggregation.

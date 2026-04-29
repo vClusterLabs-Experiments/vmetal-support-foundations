@@ -2,8 +2,6 @@
 
 **Goal:** Take the network-boot pipeline from M2 and use it to deliver an actual operating system, Talos or Flatcar, configured declaratively from data served over HTTP. The node now has an identity (hostname, role, network config) without anyone ever logging in to set it up.
 
-**Expected: ~3h reading + ~5h lab.**
-
 ## What you're actually learning
 
 - **Immutable OS as a provisioning primitive**: why Talos and Flatcar exist, and why every modern bare-metal stack assumes one of them.

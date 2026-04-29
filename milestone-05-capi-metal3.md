@@ -2,8 +2,6 @@
 
 **Goal:** Replace every manual step in M1–M4 with declarative Kubernetes resources. A `BareMetalHost` CR points at the BMC. A `Cluster` CR describes the desired cluster. Reconciliation loops do the work. You stop typing `curl` and start typing `kubectl apply`.
 
-**Expected: ~5h reading + ~8h lab.**
-
 ## What you're actually learning
 
 - **Declarative bare-metal management**: the operator pattern applied to physical hardware.

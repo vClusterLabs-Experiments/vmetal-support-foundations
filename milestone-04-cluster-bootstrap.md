@@ -2,8 +2,6 @@
 
 **Goal:** Turn the provisioned Talos node from M3 into a working single-node Kubernetes cluster, then PXE-provision a second node and join it as a worker. No operators, no Cluster API. You drive every step.
 
-**Expected: ~4h reading + ~6h lab.**
-
 ## What you're actually learning
 
 - **The handoff between "node booted" and "node joined a cluster"**: what data crosses that boundary, who owns it, and what fails when it's wrong.

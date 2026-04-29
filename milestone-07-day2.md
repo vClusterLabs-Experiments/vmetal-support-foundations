@@ -2,8 +2,6 @@
 
 **Goal:** Confront where most real fleet pain lives, not provisioning, but everything that happens after. Upgrades, decommission, credential rotation. The operations that have to work *while the cluster is in use* and that don't have a clean blank-slate fallback.
 
-**Expected: ~3h reading + ~6h lab per chosen exercise.**
-
 ## What you're actually learning
 
 - **Why day-2 is harder than day-0.** Day-0 has no users. Day-2 has SLOs, in-flight traffic, and a tenant who notices when their GPU job dies mid-epoch.

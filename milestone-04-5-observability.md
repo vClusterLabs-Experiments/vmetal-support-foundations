@@ -4,8 +4,6 @@
 
 **Goal:** Build the diagnostic muscle that distinguishes a support engineer from someone who just installs things. When 1 of 500 nodes fails to provision, where do you look, in what order, and what do you look for?
 
-**Expected: ~2h reading + ~3h lab.**
-
 ## What you're actually learning
 
 - **The boot chain has many layers; a failure surfaces at one and points back to another.** Symptom location ≠ root cause location.
