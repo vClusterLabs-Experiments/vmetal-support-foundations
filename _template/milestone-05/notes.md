@@ -1,4 +1,4 @@
-# Milestone 5 — Notes
+# Milestone 5: Notes
 
 Brief: [`../../milestone-05-capi-metal3.md`](../../milestone-05-capi-metal3.md)
 
@@ -8,8 +8,8 @@ Brief: [`../../milestone-05-capi-metal3.md`](../../milestone-05-capi-metal3.md)
 - [ ] `manifests/baremetalhost-*.yaml`
 - [ ] `manifests/cluster.yaml`
 - [ ] `manifests/machinedeployment.yaml`
-- [ ] `reconciliation-trace.md` — what happened when you killed a node manually
-- [ ] `capi-vs-vmetal.md` — first-pass map of CAPI/Metal3 primitives to vmetal concepts
+- [ ] `reconciliation-trace.md`, what happened when you killed a node manually
+- [ ] `capi-vs-vmetal.md`, first-pass map of CAPI/Metal3 primitives to vmetal concepts
 
 ## Anchor question
 
@@ -29,7 +29,7 @@ Brief: [`../../milestone-05-capi-metal3.md`](../../milestone-05-capi-metal3.md)
 
 ### 3. Reconciliation cost: software loops every 10s; bare-metal loops can't. What does this force the controller design to look like?
 
-(your answer — state machines, long timeouts, hard-to-test transitions)
+(your answer, state machines, long timeouts, hard-to-test transitions)
 
 ### 4. Image management: where does the OS image come from? Who builds it, where's it stored, how does Metal3 reference it?
 
@@ -41,6 +41,6 @@ Brief: [`../../milestone-05-capi-metal3.md`](../../milestone-05-capi-metal3.md)
 
 ### 6. vmetal hint: which vmetal CRDs map to CAPI/Metal3 primitives, and which are net-new?
 
-(initial map — refine in M6)
+(initial map, refine in M6)
 
 ## Observations

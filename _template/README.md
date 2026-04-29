@@ -40,7 +40,7 @@ Each milestone's `notes.md` is the durable artifact. Other files (configs, scrip
 
 ## Convention
 
-- Treat `scaffolding/` subdirectories (libvirt XML, dnsmasq.conf, etc.) as throwaway — they document reproducibility but aren't the thing you're studying.
+- Treat `scaffolding/` subdirectories (libvirt XML, dnsmasq.conf, etc.) as throwaway, they document reproducibility but aren't the thing you're studying.
 - The conceptual question answers in `notes.md` are what transfer to real hardware.
 - Don't skip the "induce a failure" success criteria. They're the most valuable exercise in each milestone.
 
@@ -48,8 +48,8 @@ Each milestone's `notes.md` is the durable artifact. Other files (configs, scrip
 
 For each milestone, keep two files open:
 
-1. `lab/vmetal/milestone-NN-*.md` — the brief (read-only reference)
-2. `lab/vmetal/work-<you>/milestone-NN/notes.md` — your answers (active work)
+1. `lab/vmetal/milestone-NN-*.md`, the brief (read-only reference)
+2. `lab/vmetal/work-<you>/milestone-NN/notes.md`, your answers (active work)
 
 ---
 

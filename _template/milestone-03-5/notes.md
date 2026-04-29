@@ -1,13 +1,13 @@
-# Milestone 3.5 — Notes
+# Milestone 3.5: Notes
 
 Brief: [`../../milestone-03-5-inventory.md`](../../milestone-03-5-inventory.md)
 
 ## Files to produce
 
 - [ ] `notes.md` (this file)
-- [ ] `inventory.yaml` — manual data model (strategy 1)
-- [ ] `enroll.sh` — auto-enrollment script (strategy 2)
-- [ ] `aggregation-sketch.md` — design for strategy 3
+- [ ] `inventory.yaml`, manual data model (strategy 1)
+- [ ] `enroll.sh`, auto-enrollment script (strategy 2)
+- [ ] `aggregation-sketch.md`, design for strategy 3
 
 ## Anchor question
 
@@ -35,7 +35,7 @@ Brief: [`../../milestone-03-5-inventory.md`](../../milestone-03-5-inventory.md)
 
 ## Tradeoff analysis
 
-Manual / fingerprinting / aggregation — which fits which operational reality?
+Manual / fingerprinting / aggregation, which fits which operational reality?
 
 (your analysis)
 

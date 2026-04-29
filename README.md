@@ -1,13 +1,13 @@
 # vmetal Learning Lab
 
-A bottom-up path to understanding the full stack vmetal runs on. The goal is conceptual mastery, not a working vmetal install — though you'll have one by the end. Each milestone uses disposable scaffolding (libvirt + sushy-tools on a Lima VM) to teach contracts that transfer to real hardware.
+A bottom-up path to understanding the full stack vmetal runs on. The goal is conceptual mastery, not a working vmetal install, though you'll have one by the end. Each milestone uses disposable scaffolding (libvirt + sushy-tools on a Lima VM) to teach contracts that transfer to real hardware.
 
 ## How to use this
 
 - Work milestones in order. Each assumes the prior one's exit artifact exists.
 - Read each milestone's `## Reading list` and navigate the linked docs yourself. The briefs intentionally do not include copy-pasteable commands.
-- The durable artifact at every milestone is `notes.md` — your written answers to the conceptual questions. Configs and scripts are throwaway.
-- Only M7 is optional; the `.5` interludes (M3.5, M4.5) are required — M5 depends on both.
+- The durable artifact at every milestone is `notes.md`, your written answers to the conceptual questions. Configs and scripts are throwaway.
+- Only M7 is optional; the `.5` interludes (M3.5, M4.5) are required, M5 depends on both.
 
 ## Milestones
 
@@ -27,7 +27,7 @@ A bottom-up path to understanding the full stack vmetal runs on. The goal is con
 
 The path is **bottom-up by abstraction layer**: BMC → network boot → OS → cluster → declarative orchestration → product. Each layer's contract is a black box to the layer above and a learned skill at its own level. By the time you install vmetal in M6, every component it spins up corresponds to a layer you've operated by hand.
 
-The two `.5` interludes are not enrichment — they are load-bearing. M5 will assume you've thought about inventory (M3.5) and built diagnostic instinct for the boot chain (M4.5). Skipping them makes M5 noticeably harder to reason about.
+The two `.5` interludes are not enrichment, they are load-bearing. M5 will assume you've thought about inventory (M3.5) and built diagnostic instinct for the boot chain (M4.5). Skipping them makes M5 noticeably harder to reason about.
 
 ## Apple Silicon notes
 
@@ -37,7 +37,7 @@ The two `.5` interludes are not enrichment — they are load-bearing. M5 will as
 
 ## Directory layout
 
-The curriculum (briefs + learner-workspace template) lives at the repo root. Your active work goes under `lab/vmetal/`, which is gitignored — copy `_template/` to start.
+The curriculum (briefs + learner-workspace template) lives at the repo root. Your active work goes under `lab/vmetal/`, which is gitignored, copy `_template/` to start.
 
 ```text
 .
@@ -46,11 +46,11 @@ The curriculum (briefs + learner-workspace template) lives at the repo root. You
 ├── milestone-02-netboot.md              (brief)
 ├── ...
 ├── milestone-07-day2.md                 (brief)
-├── _template/                           (learner workspace skeleton — copy this)
+├── _template/                           (learner workspace skeleton, copy this)
 │   ├── README.md
 │   ├── milestone-01/notes.md
 │   └── ...
-└── lab/                                 (gitignored — your active work)
+└── lab/                                 (gitignored, your active work)
     └── vmetal/
         ├── milestone-01/
         │   ├── notes.md                 (the durable artifact)
@@ -62,8 +62,8 @@ The curriculum (briefs + learner-workspace template) lives at the repo root. You
 
 ## License
 
-- **Curriculum briefs** (`README.md`, `milestone-*.md`) — [CC BY-NC 4.0](./LICENSE). Non-commercial use only.
-- **Learner workspace template** (`_template/`) — [MIT](./_template/LICENSE). Use freely, including commercial learning contexts.
+- **Curriculum briefs** (`README.md`, `milestone-*.md`), [CC BY-NC 4.0](./LICENSE). Non-commercial use only.
+- **Learner workspace template** (`_template/`), [MIT](./_template/LICENSE). Use freely, including commercial learning contexts.
 - **No warranty**, express or implied, in either case.
 
 ---

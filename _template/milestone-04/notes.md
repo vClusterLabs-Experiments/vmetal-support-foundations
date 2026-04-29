@@ -1,13 +1,13 @@
-# Milestone 4 — Notes
+# Milestone 4: Notes
 
 Brief: [`../../milestone-04-cluster-bootstrap.md`](../../milestone-04-cluster-bootstrap.md)
 
 ## Files to produce
 
 - [ ] `notes.md` (this file)
-- [ ] `bootstrap-walkthrough.md` — exact sequence from cold node01 to 2-node cluster
-- [ ] `talosconfig` and `kubeconfig` — saved for later milestones
-- [ ] `failure-trace.md` — what happened with the wrong CA, how you diagnosed it
+- [ ] `bootstrap-walkthrough.md`, exact sequence from cold node01 to 2-node cluster
+- [ ] `talosconfig` and `kubeconfig`, saved for later milestones
+- [ ] `failure-trace.md`, what happened with the wrong CA, how you diagnosed it
 
 ## Anchor question
 
@@ -29,9 +29,9 @@ Brief: [`../../milestone-04-cluster-bootstrap.md`](../../milestone-04-cluster-bo
 
 (your answer)
 
-### 4. Adding a second control plane node vs. a worker — what's different?
+### 4. Adding a second control plane node vs. a worker: what's different?
 
-(your answer — etcd membership, API server load balancing)
+(your answer, etcd membership, API server load balancing)
 
 ### 5. Worker boots, joins, runs Pods. CP dies permanently. What's recoverable, from where?
 
@@ -39,6 +39,6 @@ Brief: [`../../milestone-04-cluster-bootstrap.md`](../../milestone-04-cluster-bo
 
 ### 6. 100 workers join simultaneously. Bottleneck?
 
-(your answer — API server admission, etcd write throughput, cert signing)
+(your answer, API server admission, etcd write throughput, cert signing)
 
 ## Observations

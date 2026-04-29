@@ -1,14 +1,14 @@
-# Milestone 6 — Notes
+# Milestone 6: Notes
 
 Brief: [`../../milestone-06-vmetal.md`](../../milestone-06-vmetal.md)
 
 ## Files to produce
 
 - [ ] `notes.md` (this file)
-- [ ] `crd-mapping.md` — table mapping vmetal CRDs to CAPI/Metal3 primitives
-- [ ] `pod-inventory.md` — what's running and why
-- [ ] `m5-vs-m6-diff.md` — manifests compared, opinions called out
-- [ ] `sharp-edges.md` — failures vmetal handles vs. doesn't
+- [ ] `crd-mapping.md`, table mapping vmetal CRDs to CAPI/Metal3 primitives
+- [ ] `pod-inventory.md`, what's running and why
+- [ ] `m5-vs-m6-diff.md`, manifests compared, opinions called out
+- [ ] `sharp-edges.md`, failures vmetal handles vs. doesn't
 
 ## Anchor question
 
@@ -20,7 +20,7 @@ Brief: [`../../milestone-06-vmetal.md`](../../milestone-06-vmetal.md)
 
 ### 1. AI Cloud-specific concerns: what does vmetal address that generic CAPI+Metal3 doesn't?
 
-(your answer — GPU SKUs, NVLink topology, tenant isolation, image catalogs)
+(your answer, GPU SKUs, NVLink topology, tenant isolation, image catalogs)
 
 ### 2. Tenant isolation model: where does the boundary live? Physical, network, namespace, RBAC, all?
 
@@ -38,8 +38,8 @@ Brief: [`../../milestone-06-vmetal.md`](../../milestone-06-vmetal.md)
 
 (your answer)
 
-### 6. Customer evaluating vmetal vs. rolling CAPI+Metal3 themselves — case for each?
+### 6. Customer evaluating vmetal vs. rolling CAPI+Metal3 themselves: case for each?
 
-(your answer — when does the abstraction earn its weight, when is it overhead?)
+(your answer, when does the abstraction earn its weight, when is it overhead?)
 
 ## Observations

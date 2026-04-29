@@ -1,4 +1,4 @@
-# Milestone 1 — Notes
+# Milestone 1: Notes
 
 Brief: [`../../milestone-01-bmc.md`](../../milestone-01-bmc.md)
 
@@ -11,29 +11,29 @@ Brief: [`../../milestone-01-bmc.md`](../../milestone-01-bmc.md)
 
 ## Files to produce
 
-- [ ] `notes.md` (this file) — answers to conceptual questions
-- [ ] `redfish-power.sh` — sequence of HTTP calls satisfying the four success criteria
-- [ ] `scaffolding/node01.xml` — the libvirt domain definition
-- [ ] `scaffolding/provisioning-net.xml` — the libvirt network definition
-- [ ] `scaffolding/sushy-config.conf` — the sushy-tools config
+- [ ] `notes.md` (this file), answers to conceptual questions
+- [ ] `redfish-power.sh`, sequence of HTTP calls satisfying the four success criteria
+- [ ] `scaffolding/node01.xml`, the libvirt domain definition
+- [ ] `scaffolding/provisioning-net.xml`, the libvirt network definition
+- [ ] `scaffolding/sushy-config.conf`, the sushy-tools config
 
 ## Conceptual questions
 
 ### 1. What does a BMC fundamentally provide that the host OS cannot, and why must it be a separate compute element?
 
-(your answer — think: host is off, host is wedged, host's NIC driver crashed, first OS install)
+(your answer, think: host is off, host is wedged, host's NIC driver crashed, first OS install)
 
 **Lab checkpoint:** `GET /redfish/v1/Systems/<id>` and confirm `PowerState` reflects what `virsh list` shows.
 
 ### 2. What state does the BMC own vs. the host?
 
-(your answer — where does "boot device = PXE" actually live? what persists across host power cycle? across BMC reset?)
+(your answer, where does "boot device = PXE" actually live? what persists across host power cycle? across BMC reset?)
 
 **Lab checkpoint:** PATCH a boot-device value, restart sushy-tools, GET it back. Power-cycle the libvirt domain, GET it back. Note what survived which.
 
 ### 3. Power actions are asynchronous. How should a consumer handle that?
 
-(your answer — what shape of caller does an async API force? Hint: loop, not RPC.)
+(your answer, what shape of caller does an async API force? Hint: loop, not RPC.)
 
 **Lab checkpoint:** POST `ComputerSystem.Reset = On`, immediately poll `PowerState` every 1s, log timestamps until convergence. Repeat from On → ForceOff. Record the convergence delays.
 
