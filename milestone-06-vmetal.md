@@ -6,13 +6,13 @@
 
 > ## 🛑 NOT AN ENDORSEMENT 🛑
 >
-> Nothing in this curriculum should be read as a recommendation or endorsement (implied or otherwise) of a particular vmetal architecture. The choices here exist to enforce a specific learning workflow. Some vmetal features (notably Auto Nodes and Private Node tenant clusters) have requirements and constraints that may differ from what this lab uses. For production guidance, consult the official documentation or your vCluster Labs contact.
+> This milestone runs vmetal at lab scale on Apple Silicon under TCG. That is not a production architecture. This curriculum is internal training material — not engineering or production guidance. Specific feature support (Auto Nodes, Private Node Tenant Clusters, supported OS images, sizing, GPU enablement) is governed by the official vmetal documentation and your vCluster Labs contact, not by anything written here.
 
 ---
 
 ## What you're actually learning
 
-- **vmetal's value-add is the delta**, not the foundation. The foundation is the same Redfish/PXE/ignition/CAPI/Metal3 stack you built by hand.
+- **vmetal's value-add is the delta**, not the foundation. The foundation is the same Redfish/PXE/cloud-init/CAPI/Metal3 stack you built by hand in M1–M5, with CABPK rendering cloud-init user-data and Ironic delivering it via ConfigDrive.
 - **The AI Cloud-specific concerns** that motivate that delta: GPU inventory, tenant isolation, image catalogs, scheduling across heterogeneous hardware, day-2 lifecycle.
 - **How to read a product** by mapping its surface area onto primitives you already understand.
 
@@ -108,7 +108,16 @@ This is empirical, answer from your observed failure. The reading is to ground "
 - [vmetal Limitations](https://vmetal.ai/docs/limitations/), use documented limits first; if you need release-level behavior, inspect the installed chart/image versions alongside the public docs.
 - [Joel Spolsky: The Law of Leaky Abstractions](https://www.joelonsoftware.com/2002/11/11/the-law-of-leaky-abstractions/), short, classic framing for leaky abstractions.
 
-### 6. Customer evaluation: vmetal vs. roll-your-own
+### 6. runcmd-driven Tenant Cluster registration
+
+vmetal's user-data for Private Node Tenant Clusters includes registration scripts (delivered via cloud-init `runcmd`) on top of what CABPK alone would produce. Concretely: a freshly-provisioned Private Node has to know which Tenant Cluster it belongs to, register itself, and then complete `kubeadm join` against that Tenant Cluster — not the Control Plane Cluster that just provisioned it. Where in the M5 chain (`KubeadmConfig` → CABPK → Secret → BMH `userData` → Ironic ConfigDrive → cloud-init) does that customization land? Is the registration script a `runcmd` *prepended* to CABPK's output, *appended* after CABPK's `kubeadm join` line, or carried in a separate cloud-init document merged at delivery time? What does each placement imply when a support ticket says "Private Node provisioned, but never appeared in the Tenant Cluster"? Where do you SSH first?
+
+**Read first:**
+- [vmetal Architecture](https://vmetal.ai/docs/architecture/), the documented description of how vmetal generates user-data for Private Node registration.
+- [Cluster API: Bootstrap Provider Kubeadm](https://cluster-api.sigs.k8s.io/tasks/bootstrap/kubeadm-bootstrap.html), specifically the `preKubeadmCommands` / `postKubeadmCommands` fields, the upstream extension points CABPK exposes for runcmd-shaped customization.
+- Re-read your own M3 `failure-modes.md`, the cloud-init runcmd failure pattern is identical here.
+
+### 7. Customer evaluation: vmetal vs. roll-your-own
 
 When does the abstraction earn its weight, and when is it overhead?
 
@@ -126,7 +135,7 @@ When does the abstraction earn its weight, and when is it overhead?
 
 `lab/vmetal/milestone-06/`:
 
-- `notes.md`, six conceptual answers.
+- `notes.md`, seven conceptual answers.
 - `crd-mapping.md`, the table mapping vmetal CRDs to CAPI/Metal3 primitives.
 - `pod-inventory.md`, what's running and why.
 - `m5-vs-m6-diff.md`, manifests compared, opinions called out.
@@ -136,4 +145,4 @@ When you can sit in front of a customer and answer "what does vmetal do that I c
 
 ---
 
-Last Updated: 2026-04-29
+Last Updated: 2026-05-01
