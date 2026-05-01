@@ -137,14 +137,14 @@ When the BMC says `boot=Pxe`, where does that flag actually live, and how does t
 **Read first:**
 - [Ironic: Redfish driver, boot mode and management](https://docs.openstack.org/ironic/latest/admin/drivers/redfish.html), focus on the boot-mode and virtual-media sections. Production driver context for `BootSourceOverrideTarget`, `BootSourceOverrideEnabled`, `Pxe`, and vendor interoperability notes, short, concrete, and the place real implementations get this wrong.
 - [sushy-tools source](https://opendev.org/openstack/sushy-tools), optional source dive for the simulator implementation if you want to trace how this mock handles Redfish System state.
-- [Talos: Bare-metal PXE installation](https://docs.siderolabs.com/talos/v1.12/platform-specific-installations/bare-metal-platforms/pxe), Talos's documented PXE flow, the M3-onwards stack you'll exercise next.
+- [Ubuntu Server: Netboot install](https://canonical-subiquity.readthedocs-hosted.com/en/latest/howto/install-netboot.html), the kernel/initrd you'll chainload from iPXE in M3 to start the Subiquity autoinstall.
 
 ## What is NOT in this milestone
 
 - No real OS installed to disk. The node boots into iPXE / a test payload and stops.
 - No per-node configuration. Every node would boot identically right now. (Milestone 3 fixes this with MAC-based dispatch.)
 - No HTTPS, no signed boot. (Milestone 5+ when we look at supply-chain concerns.)
-- No Talos / Flatcar / ignition yet. That's Milestone 3.
+- No OS install, no cloud-init yet. The node boots into iPXE / a test payload and stops. M3 chainloads the Ubuntu netboot installer from here.
 
 ## Exit artifact
 
@@ -156,7 +156,7 @@ A directory `lab/vmetal/milestone-02/` containing:
 - `failure-modes.md`, what you saw when you broke TFTP vs. broke DHCP, and how you'd diagnose each from symptoms alone.
 - `scaffolding/`, dnsmasq config, HTTP server config, any iPXE build notes. Throwaway.
 
-When all of that exists and you can power-cycle the node and watch your custom iPXE script run end-to-end, you're ready for Milestone 3: immutable OS provisioning (Talos or Flatcar via iPXE + ignition/machine config over HTTP).
+When all of that exists and you can power-cycle the node and watch your custom iPXE script run end-to-end, you're ready for Milestone 3: OS provisioning with cloud-init (Ubuntu live-server netboot + Subiquity autoinstall + NoCloud over HTTP).
 
 ---
 
