@@ -6,7 +6,7 @@ A bottom-up path to understanding the full stack vmetal runs on. The goal is con
 
 > ## 🛑 NOT AN ENDORSEMENT 🛑
 >
-> Nothing in this curriculum should be read as a recommendation or endorsement (implied or otherwise) of a particular vmetal architecture. The choices here exist to enforce a specific learning workflow. Some vmetal features (notably Auto Nodes and Private Node tenant clusters) have requirements and constraints that may differ from what this lab uses. For production guidance, consult the official documentation or your vCluster Labs contact.
+> This curriculum runs everything at lab scale on a single Lima VM. That is not a production architecture. This curriculum is internal training material — not engineering or production guidance. Specific vmetal feature support (Auto Nodes, Private Node Tenant Clusters, supported OS images, sizing, GPU enablement) is governed by the official vmetal documentation and your vCluster Labs contact, not by anything written here.
 
 ---
 
@@ -23,7 +23,7 @@ A bottom-up path to understanding the full stack vmetal runs on. The goal is con
 |---|---|---|
 | 1 | [milestone-01-bmc.md](./milestone-01-bmc.md) | Drive a Redfish API to power a fake server on/off. Learn the BMC contract. |
 | 2 | [milestone-02-netboot.md](./milestone-02-netboot.md) | PXE / DHCP / TFTP / iPXE. Boot a diskless node off the network. |
-| 3 | [milestone-03-os-provisioning.md](./milestone-03-os-provisioning.md) | Deliver Talos or Flatcar with a config-over-HTTP. Generic image becomes a specific node. |
+| 3 | [milestone-03-os-provisioning.md](./milestone-03-os-provisioning.md) | Provision Ubuntu by netboot + Subiquity autoinstall + cloud-init over HTTP. Generic image becomes a specific node. |
 | 3.5 | [milestone-03-5-inventory.md](./milestone-03-5-inventory.md) | How does the orchestrator learn what hardware exists? |
 | 4 | [milestone-04-cluster-bootstrap.md](./milestone-04-cluster-bootstrap.md) | Bring up single-node K8s and join a PXE-provisioned worker, by hand. |
 | 4.5 | [milestone-04-5-observability.md](./milestone-04-5-observability.md) | Induce failures across the chain. Build diagnostic runbooks. |
@@ -76,4 +76,4 @@ The curriculum (briefs + learner-workspace template) lives at the repo root. You
 
 ---
 
-Last Updated: 2026-04-29
+Last Updated: 2026-05-01

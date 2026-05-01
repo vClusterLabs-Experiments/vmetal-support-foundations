@@ -25,15 +25,7 @@ In production this whole box collapses into: a real server with a real BMC chip 
 
 ## Apple Silicon constraint
 
-No nested KVM, so inner VMs run under TCG (software emulation). Pick one guest arch and stick with it across all milestones. Recommendation: **x86_64**, because vmetal/Metal3/Talos/Flatcar docs assume amd64 by default. Slow but tolerable for 1–3 nodes.
-
----
-
-> ## 🛑 NOT AN ENDORSEMENT 🛑
->
-> Nothing in this curriculum should be read as a recommendation or endorsement (implied or otherwise) of a particular vmetal architecture. The choices here exist to enforce a specific learning workflow. Some vmetal features (notably Auto Nodes and Private Node tenant clusters) have requirements and constraints that may differ from what this lab uses. For production guidance, consult the official documentation or your vCluster Labs contact.
-
----
+No nested KVM, so inner VMs run under TCG (software emulation). Pick one guest arch and stick with it across all milestones. Recommendation: **x86_64**, because vmetal/Metal3/Ubuntu cloud-image docs assume amd64 by default. Slow but tolerable for 1–3 nodes.
 
 ## Pre-flight: scaffolding setup
 
@@ -105,7 +97,7 @@ A `POST` to `ComputerSystem.Reset` can return before the state change is complet
 ## What is NOT in this milestone
 
 - No DHCP, TFTP, HTTP server. The fake server will fail to boot, expected and correct.
-- No OS image, ignition, or cloud-init.
+- No OS image yet (cloud-init enters in M3).
 - No second node. One is enough to learn the contract.
 - No vmetal, Metal3, or Cluster API.
 
@@ -121,4 +113,4 @@ When `notes.md` answers all three questions and `redfish-power.sh` runs cleanly 
 
 ---
 
-Last Updated: 2026-04-29
+Last Updated: 2026-05-01

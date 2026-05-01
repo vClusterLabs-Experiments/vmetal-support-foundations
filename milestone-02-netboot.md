@@ -2,14 +2,6 @@
 
 **Goal:** Take the diskless server from Milestone 1 and make it boot something, anything, off the network. You're not installing an OS yet. The conceptual payoff is understanding how a machine that knows nothing about itself except its MAC address ends up executing code you served it.
 
----
-
-> ## 🛑 NOT AN ENDORSEMENT 🛑
->
-> Nothing in this curriculum should be read as a recommendation or endorsement (implied or otherwise) of a particular vmetal architecture. The choices here exist to enforce a specific learning workflow. Some vmetal features (notably Auto Nodes and Private Node tenant clusters) have requirements and constraints that may differ from what this lab uses. For production guidance, consult the official documentation or your vCluster Labs contact.
-
----
-
 ## What you're actually learning
 
 - **The PXE handshake**: how a NIC ROM, with no disk and no config, finds a bootloader on a network it has never seen before.
@@ -160,4 +152,4 @@ When all of that exists and you can power-cycle the node and watch your custom i
 
 ---
 
-Last Updated: 2026-04-29
+Last Updated: 2026-05-01

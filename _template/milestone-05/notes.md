@@ -7,40 +7,59 @@ Brief: [`../../milestone-05-capi-metal3.md`](../../milestone-05-capi-metal3.md)
 - [ ] `notes.md` (this file)
 - [ ] `manifests/baremetalhost-*.yaml`
 - [ ] `manifests/cluster.yaml`
+- [ ] `manifests/kubeadmcontrolplane.yaml`
 - [ ] `manifests/machinedeployment.yaml`
-- [ ] `reconciliation-trace.md`, what happened when you killed a node manually
-- [ ] `capi-vs-vmetal.md`, first-pass map of CAPI/Metal3 primitives to vmetal concepts
+- [ ] `manifests/kubeadmconfigtemplate.yaml`
+- [ ] `manifests/metal3machinetemplate.yaml`
+- [ ] `userdata-trace.md` — **the central artifact**: kubectl walk from `KubeadmConfig` → decoded bootstrap Secret → BMH `spec.userData`, with the decoded cloud-init payload diffed against your M3 `seed/user-data`. Annotate every line CABPK added.
+- [ ] `reconciliation-trace.md`, what happened when you killed a node manually (timeline + controller logs from BMO, CAPM3, KCP)
+- [ ] `capi-vs-vmetal.md`, first-pass map of CAPI/Metal3/CABPK primitives to vmetal concepts (refine in M6)
 
 ## Anchor question
 
-> What does declarative bare-metal management actually mean, and what reconciliation loops are running to make it real?
+> The cloud-init payload you wrote by hand in M3 still runs at first boot — but you didn't write it this time. Who wrote it, where does it live in Kubernetes, and how did it reach the disk?
 
-(your answer)
+(your answer; CABPK → Secret → BMH `spec.userData` → Ironic → ConfigDrive → cloud-init ConfigDrive datasource → first-boot runcmd.)
 
 ## Conceptual questions
 
-### 1. Why is Metal3 split into CAPI provider + Ironic + IPA? What does each own?
+### 1. Why split Metal3 into CAPI provider + BMO + Ironic + IPA?
 
-(your answer)
+(your answer; what each component owns, why IPA is a separate ramdisk on the host being provisioned.)
 
-### 2. Management cluster controls workload cluster's nodes. What if the management cluster dies?
+### 2. Management cluster dies: are workload nodes orphaned?
 
-(your answer)
+(your answer; what state lives only on management vs. workload, `clusterctl move`, pivot scenario.)
 
-### 3. Reconciliation cost: software loops every 10s; bare-metal loops can't. What does this force the controller design to look like?
+### 3. Reconciliation cost on physical hardware
 
-(your answer, state machines, long timeouts, hard-to-test transitions)
+(your answer; software vs. bare-metal cost asymmetry, Metal3 host state machine, KCP/Machine controller long-tail handling.)
 
-### 4. Image management: where does the OS image come from? Who builds it, where's it stored, how does Metal3 reference it?
+### 4. CABPK and the user-data delivery boundary
 
-(your answer)
+(your answer; why CABPK generates and Metal3 delivers; bootstrap Secret contract; what would change if the OS were Talos — and why the curriculum committed to Ubuntu/cloud-init instead.)
 
-### 5. Two operators want to provision the same physical node. Locking model? Which CR field expresses ownership?
+### 5. Image management
 
-(your answer)
+(your answer; image source, who builds, how Metal3 references — `image.url`/`checksum`/`format`; raw vs. qcow2 tradeoff; what `checksumType` prevents.)
 
-### 6. vmetal hint: which vmetal CRDs map to CAPI/Metal3 primitives, and which are net-new?
+### 6. Locking: who owns a physical node?
 
-(initial map, refine in M6)
+(your answer; `consumerRef` semantics, deprovision-then-reprovision lifecycle.)
+
+### 7. vmetal mapping (preview for M6)
+
+(initial map; pay attention to anything that *modifies the cloud-init payload* on its way to the host — Tenant Cluster registration scripts, GPU-specific bootstrap.)
+
+## Reconciliation test
+
+- [ ] Kill a `provisioned` node via `virsh destroy`. Watch BMO, CAPM3, and KCP each react. What does each layer do? Capture the controller logs.
+
+## "Follow the user-data" trace
+
+- [ ] `kubectl get kubeadmconfig <kc> -o jsonpath='{.status.dataSecretName}'`
+- [ ] Decode: `kubectl get secret <name> -o jsonpath='{.data.value}' | base64 -d | gunzip` (fall back to base64-only if gunzip fails)
+- [ ] Confirm: `kubectl get bmh <name> -o yaml | grep -A 2 userData`
+- [ ] Diff decoded payload vs. `M3 seed/user-data`. Annotate.
 
 ## Observations
