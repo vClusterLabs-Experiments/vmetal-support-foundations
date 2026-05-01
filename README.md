@@ -2,6 +2,14 @@
 
 A bottom-up path to understanding the full stack vmetal runs on. The goal is conceptual mastery, not a working vmetal install, though you'll have one by the end. Each milestone uses disposable scaffolding (libvirt + sushy-tools on a Lima VM) to teach contracts that transfer to real hardware.
 
+---
+
+> ## 🛑 NOT AN ENDORSEMENT 🛑
+>
+> Nothing in this curriculum should be read as a recommendation or endorsement (implied or otherwise) of a particular vmetal architecture. The choices here exist to enforce a specific learning workflow. Some vmetal features (notably Auto Nodes and Private Node tenant clusters) have requirements and constraints that may differ from what this lab uses. For production guidance, consult the official documentation or your vCluster Labs contact.
+
+---
+
 ## How to use this
 
 - Work milestones in order. Each assumes the prior one's exit artifact exists.

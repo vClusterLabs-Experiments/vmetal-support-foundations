@@ -4,6 +4,14 @@
 
 **Goal:** Confront the question every bare-metal stack glosses over: how does the orchestrator *learn* what hardware exists? Until now you've been hand-pointing tools at `node01`. Real fleets have thousands of nodes and no human typing them in.
 
+---
+
+> ## 🛑 NOT AN ENDORSEMENT 🛑
+>
+> Nothing in this curriculum should be read as a recommendation or endorsement (implied or otherwise) of a particular vmetal architecture. The choices here exist to enforce a specific learning workflow. Some vmetal features (notably Auto Nodes and Private Node tenant clusters) have requirements and constraints that may differ from what this lab uses. For production guidance, consult the official documentation or your vCluster Labs contact.
+
+---
+
 ## What you're actually learning
 
 - **The discovery problem**: a server in a rack has no way to announce itself except by powering on and emitting DHCP. Everything else is manual data entry or out-of-band aggregation.

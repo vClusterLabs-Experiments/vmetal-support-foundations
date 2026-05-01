@@ -2,6 +2,14 @@
 
 **Goal:** Install vmetal on the management cluster from M5 and recognize every component. Map each of its CRDs and controllers to the layers below it. Articulate exactly what vmetal *adds* over CAPI + Metal3, and why those additions exist.
 
+---
+
+> ## 🛑 NOT AN ENDORSEMENT 🛑
+>
+> Nothing in this curriculum should be read as a recommendation or endorsement (implied or otherwise) of a particular vmetal architecture. The choices here exist to enforce a specific learning workflow. Some vmetal features (notably Auto Nodes and Private Node tenant clusters) have requirements and constraints that may differ from what this lab uses. For production guidance, consult the official documentation or your vCluster Labs contact.
+
+---
+
 ## What you're actually learning
 
 - **vmetal's value-add is the delta**, not the foundation. The foundation is the same Redfish/PXE/ignition/CAPI/Metal3 stack you built by hand.

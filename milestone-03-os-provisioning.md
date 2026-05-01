@@ -2,9 +2,17 @@
 
 **Goal:** Take the network-boot pipeline from M2 and use it to deliver an actual operating system, Talos or Flatcar, configured declaratively from data served over HTTP. The node now has an identity (hostname, role, network config) without anyone ever logging in to set it up.
 
+---
+
+> ## 🛑 NOT AN ENDORSEMENT 🛑
+>
+> Nothing in this curriculum should be read as a recommendation or endorsement (implied or otherwise) of a particular vmetal architecture. The choices here exist to enforce a specific learning workflow. Some vmetal features (notably Auto Nodes and Private Node tenant clusters) have requirements and constraints that may differ from what this lab uses. For production guidance, consult the official documentation or your vCluster Labs contact.
+
+---
+
 ## What you're actually learning
 
-- **Immutable OS as a provisioning primitive**: why Talos and Flatcar exist, and why every modern bare-metal stack assumes one of them.
+- **Immutable OS as a provisioning primitive**: why Talos and Flatcar exist, and why the immutable-image pattern keeps showing up in modern bare-metal stacks (alongside, not replacing, mutable-distro stacks like MAAS or generic Ironic flows).
 - **Declarative node identity**: how a generic OS image becomes a *specific* node via config delivered at boot time.
 - **The kernel command line as a control surface**: a kernel arg in the `talos.config*` family (e.g. `talos.config=`, `talos.config.inline=`) or `coreos.config.url=` is how you tell a generic kernel where to fetch its identity. Verify the exact arg against the Talos acquisition doc, the surface has expanded across recent releases.
 - **Why disk-based persistence finally enters the picture**: ephemeral booting was fine for M2, but a Kubernetes node needs to remember things across reboots. What does it remember, and what stays ephemeral?

@@ -4,6 +4,14 @@
 
 **Goal:** Build the diagnostic muscle that distinguishes a support engineer from someone who just installs things. When 1 of 500 nodes fails to provision, where do you look, in what order, and what do you look for?
 
+---
+
+> ## 🛑 NOT AN ENDORSEMENT 🛑
+>
+> Nothing in this curriculum should be read as a recommendation or endorsement (implied or otherwise) of a particular vmetal architecture. The choices here exist to enforce a specific learning workflow. Some vmetal features (notably Auto Nodes and Private Node tenant clusters) have requirements and constraints that may differ from what this lab uses. For production guidance, consult the official documentation or your vCluster Labs contact.
+
+---
+
 ## What you're actually learning
 
 - **The boot chain has many layers; a failure surfaces at one and points back to another.** Symptom location ≠ root cause location.
@@ -68,7 +76,7 @@ What can it see that the OS-level logs can't?
 
 ### 2. Diagnostic ordering: where to look first
 
-The same symptom ("node never appears") can come from any of five layers. What's a heuristic ordering, likelihood × cost-to-check?
+The same symptom ("node never appears") can come from any of five layers. What's a heuristic ordering, likelihood �: cost-to-check?
 
 **Read first:**
 - [Google SRE Book: Effective Troubleshooting](https://sre.google/sre-book/effective-troubleshooting/), the general framing of "check the cheap, common things first" and a systematic ordering for narrowing the failure layer.

@@ -2,6 +2,14 @@
 
 **Goal:** Turn the provisioned Talos node from M3 into a working single-node Kubernetes cluster, then PXE-provision a second node and join it as a worker. No operators, no Cluster API. You drive every step.
 
+---
+
+> ## 🛑 NOT AN ENDORSEMENT 🛑
+>
+> Nothing in this curriculum should be read as a recommendation or endorsement (implied or otherwise) of a particular vmetal architecture. The choices here exist to enforce a specific learning workflow. Some vmetal features (notably Auto Nodes and Private Node tenant clusters) have requirements and constraints that may differ from what this lab uses. For production guidance, consult the official documentation or your vCluster Labs contact.
+
+---
+
 ## What you're actually learning
 
 - **The handoff between "node booted" and "node joined a cluster"**: what data crosses that boundary, who owns it, and what fails when it's wrong.

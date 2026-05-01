@@ -27,6 +27,14 @@ In production this whole box collapses into: a real server with a real BMC chip 
 
 No nested KVM, so inner VMs run under TCG (software emulation). Pick one guest arch and stick with it across all milestones. Recommendation: **x86_64**, because vmetal/Metal3/Talos/Flatcar docs assume amd64 by default. Slow but tolerable for 1–3 nodes.
 
+---
+
+> ## 🛑 NOT AN ENDORSEMENT 🛑
+>
+> Nothing in this curriculum should be read as a recommendation or endorsement (implied or otherwise) of a particular vmetal architecture. The choices here exist to enforce a specific learning workflow. Some vmetal features (notably Auto Nodes and Private Node tenant clusters) have requirements and constraints that may differ from what this lab uses. For production guidance, consult the official documentation or your vCluster Labs contact.
+
+---
+
 ## Pre-flight: scaffolding setup
 
 This is one-time work; you'll reuse the same Lima VM through M7. None of it is the subject of study, get it working, then forget it. If you already have Lima with libvirt and sushy-tools running, skip ahead.
