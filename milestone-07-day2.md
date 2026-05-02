@@ -1,13 +1,13 @@
 # Milestone 7: Day 2 Operations (optional)
 
-**Goal:** Confront where most real fleet pain lives — not provisioning, but everything that happens after. Upgrades, decommission, credential rotation. The operations that have to work *while the cluster is in use* and that don't have a clean blank-slate fallback.
+**Goal:** Confront where most real fleet pain lives, not provisioning, but everything that happens after. Upgrades, decommission, credential rotation. The operations that have to work *while the cluster is in use* and that don't have a clean blank-slate fallback.
 
 ## What you're actually learning
 
 - **Why day-2 is harder than day-0.** Day-0 has no users. Day-2 has SLOs, in-flight traffic, and a tenant who notices when their GPU job dies mid-epoch.
-- **The image-rebuild + re-provision upgrade primitive.** This is how Metal3 — and therefore vmetal — actually upgrades a node. You don't `apt upgrade` in place; you build a new raw OS image, swap `BareMetalHost.spec.image.url`, let Metal3 deprovision and reprovision, and the node rejoins the cluster running the new image. That's the production model M5 set up; M7 exercises it.
+- **The image-rebuild + re-provision upgrade primitive.** This is how Metal3, and therefore vmetal, actually upgrades a node. You don't `apt upgrade` in place; you build a new raw OS image, swap `BareMetalHost.spec.image.url`, let Metal3 deprovision and reprovision, and the node rejoins the cluster running the new image. That's the production model M5 set up; M7 exercises it.
 - **Patterns that work at fleet scale:** drain-and-replace, rolling updates with surge, blue/green at the cluster level. CP rollout (drain-aware, one-at-a-time, quorum-bounded) vs. worker rollout (parallelism allowed up to PDB constraints).
-- **The credential lifecycle problem.** BMC passwords, kubeadm join tokens, certificates, image checksums — every secret has an expiration, a rotation procedure, and a blast radius.
+- **The credential lifecycle problem.** BMC passwords, kubeadm join tokens, certificates, image checksums, every secret has an expiration, a rotation procedure, and a blast radius.
 - **Where vmetal earns its keep** vs. where it offloads to the operator.
 
 ## Anchor question
@@ -16,7 +16,7 @@
 
 ## Lab exercises
 
-Pick at least two of 7a/7b/7c. The 7d firmware sketch is design-only — do it last and on paper. All four is overkill for a learning lab.
+Pick at least two of 7a/7b/7c. The 7d firmware sketch is design-only, do it last and on paper. All four is overkill for a learning lab.
 
 ### 7a: OS Upgrade via image rebuild and re-provision
 
@@ -49,12 +49,12 @@ Upgrade the Ubuntu OS image on a 2-node cluster (1 CP, 1 worker) without losing 
 - **[image-builder](https://github.com/kubernetes-sigs/image-builder)**, the Cluster API project's image builder. Supports raw output, baked-in Kubernetes packages, customizable kernel selection. Closest to what AI Cloud production stacks use.
 - **[Packer](https://www.packer.io/)** + an Ubuntu cloud-image base. More general-purpose; you write the provisioning script yourself.
 
-Build image N+1 with a meaningful difference — bump the kernel (`linux-image-generic-hwe-…`), bump the Kubernetes minor (`kubelet`/`kubeadm`/`kubectl` v1.35 → v1.36, respecting upstream skew policy), or both. Capture the build artifact (the `.img` and its `.sha256`) under your HTTP server's image directory.
+Build image N+1 with a meaningful difference, bump the kernel (`linux-image-generic-hwe-…`), bump the Kubernetes minor (`kubelet`/`kubeadm`/`kubectl` v1.35 → v1.36, respecting upstream skew policy), or both. Capture the build artifact (the `.img` and its `.sha256`) under your HTTP server's image directory.
 
 **Rollout semantics.**
 
 - **Worker rollout:** parallelism allowed up to PodDisruptionBudget. Drain → image swap → reprovision → rejoin. PDB is the throttle.
-- **CP rollout:** sequential, drain-aware, **bounded by etcd quorum tolerance.** The math: for `n` etcd members, `quorum = ⌊n/2⌋ + 1` and `tolerated_failures = ⌊(n − 1)/2⌋`. A 3-node CP tolerates one failure. During a CP rebuild on a 3-node cluster you've reduced effective tolerance to zero — *if a second CP fails for any reason while the first is being rebuilt*, etcd loses quorum and the apiserver cannot service writes (control-plane changes blocked) until quorum returns. Discuss the implications. Now imagine you're rolling a 5-node CP (quorum 3, tolerance 2 — one rebuild leaves tolerance 1, still safe), then a single-CP cluster (quorum 1, tolerance 0 — the cluster is unavailable for the duration of the rebuild).
+- **CP rollout:** sequential, drain-aware, **bounded by etcd quorum tolerance.** The math: for `n` etcd members, `quorum = ⌊n/2⌋ + 1` and `tolerated_failures = ⌊(n − 1)/2⌋`. A 3-node CP tolerates one failure. During a CP rebuild on a 3-node cluster you've reduced effective tolerance to zero, *if a second CP fails for any reason while the first is being rebuilt*, etcd loses quorum and the apiserver cannot service writes (control-plane changes blocked) until quorum returns. Discuss the implications. Now imagine you're rolling a 5-node CP (quorum 3, tolerance 2, one rebuild leaves tolerance 1, still safe), then a single-CP cluster (quorum 1, tolerance 0, the cluster is unavailable for the duration of the rebuild).
 
 **What to write up:**
 - The image build (commands you ran, time it took, output).
@@ -77,16 +77,16 @@ Permanently remove `node02` from the fleet.
 Change the Redfish password on `node01`.
 
 - Where is the password stored on the management-cluster side? (BMC credentials Secret referenced by `BareMetalHost.spec.bmc.credentialsName`.)
-- What's the order of operations — change BMC first, then management cluster, or vice versa? What goes wrong with the wrong order?
+- What's the order of operations, change BMC first, then management cluster, or vice versa? What goes wrong with the wrong order?
 - How do you do this on 1,000 nodes without an outage window?
 
 ### 7d: Firmware / Microcode Update (sketch only)
 
-The fourth day-2 operation, included as a sketch because doing it on libvirt/sushy-tools is meaningless — there is no firmware to flash. But the *design* matters:
+The fourth day-2 operation, included as a sketch because doing it on libvirt/sushy-tools is meaningless, there is no firmware to flash. But the *design* matters:
 
 - M1 Q5 flagged "firmware update storms" as a scale-failure mode. Sketch the rollout strategy you'd use across 1,000 nodes: which fraction in flight, what defines "healthy after flash," what's the rollback?
 - Where does the artifact live? (vendor repo, signed bundle, Redfish `UpdateService`?)
-- Whose CR — vmetal's, Metal3's, vendor-specific — owns the desired state?
+- Whose CR, vmetal's, Metal3's, vendor-specific, owns the desired state?
 - What's the equivalent of `kubectl drain` for "the BMC is about to reboot for 8 minutes"?
 
 Write the design as `firmware-rollout-design.md`; do not attempt to execute it.
@@ -103,7 +103,7 @@ Write the design as `firmware-rollout-design.md`; do not attempt to execute it.
 | etcd day-2 maintenance | [etcd: Maintenance](https://etcd.io/docs/v3.5/op-guide/maintenance/), compaction, defrag, snapshot cadence; closes the loop with M4's etcd-disaster-recovery reading |
 | `kubeadm reset` | [Kubernetes: kubeadm reset](https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-reset/), the cleanup primitive for re-init/re-join during 7b decommission |
 | Ironic cleaning | [Ironic: cleaning steps](https://docs.openstack.org/ironic/latest/admin/cleaning.html), automated + manual cleaning during deprovision |
-| vmetal upgrade surface | [vmetal Configuration](https://vmetal.ai/docs/configuration/) and [vmetal Limitations](https://vmetal.ai/docs/limitations/), what vmetal opinionates on cluster upgrades vs. defers to CAPI; if the docs don't cover an upgrade primitive you expected, that's a *vmetal sharp edge* (see M6 `sharp-edges.md`) — record it in your 7a notes |
+| vmetal upgrade surface | [vmetal Configuration](https://vmetal.ai/docs/configuration/) and [vmetal Limitations](https://vmetal.ai/docs/limitations/), what vmetal opinionates on cluster upgrades vs. defers to CAPI; if the docs don't cover an upgrade primitive you expected, that's a *vmetal sharp edge* (see M6 `sharp-edges.md`), record it in your 7a notes |
 
 ## Success criteria
 
@@ -132,7 +132,7 @@ Ubuntu *can* be `apt upgrade`'d in place. Metal3 / vmetal opts to rebuild the im
 
 **Read first:**
 - [Metal3: Provisioning and Deprovisioning](https://book.metal3.io/bmo/provisioning), the documented lifecycle.
-- [Google SRE Book: Configuration design](https://sre.google/workbook/configuration-design/), already cited in M3 — same lesson reapplied to images.
+- [Google SRE Book: Configuration design](https://sre.google/workbook/configuration-design/), already cited in M3, same lesson reapplied to images.
 
 ### 3. Upgrade ordering: control plane first or workers first?
 
@@ -144,7 +144,7 @@ What's the version-skew rule, and what's the failure mode if you reverse it? Wal
 
 ### 4. Quorum, capacity, and the cost of a CP rebuild
 
-A 3-node CP tolerates 1 failure. During a CP rollout, you've taken the tolerance to 0 *for the duration of one node's rebuild*. What does that mean operationally? On a single-node CP (your lab), a CP rebuild means cluster downtime — for how long? What's the production answer? (Hint: 5-node CP, but it's not just "more nodes." The math:
+A 3-node CP tolerates 1 failure. During a CP rollout, you've taken the tolerance to 0 *for the duration of one node's rebuild*. What does that mean operationally? On a single-node CP (your lab), a CP rebuild means cluster downtime, for how long? What's the production answer? (Hint: 5-node CP, but it's not just "more nodes." The math:
 
 | n | quorum ⌊n/2⌋+1 | tolerance ⌊(n−1)/2⌋ | tolerance during 1 rebuild |
 |---|---|---|---|
@@ -204,7 +204,7 @@ What does an attacker with Redfish admin gain that an attacker with root on the 
   - `failure-trace.md`: the deliberate failure you induced.
   - `scale-analysis.md`: what changes at 100x, with concrete numbers (image bandwidth, drain time, quorum windows).
 
-When you finish this milestone, you have done — at small scale — the full lifecycle of a bare-metal Kubernetes fleet, and you can read any vmetal/Metal3/CAPI bug report and locate it on the map.
+When you finish this milestone, you have done, at small scale, the full lifecycle of a bare-metal Kubernetes fleet, and you can read any vmetal/Metal3/CAPI bug report and locate it on the map.
 
 ---
 

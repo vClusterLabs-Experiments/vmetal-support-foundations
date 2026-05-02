@@ -27,11 +27,11 @@ Brief: [`../../milestone-04-5-observability.md`](../../milestone-04-5-observabil
 
 ### 2. Diagnostic ordering: where to look first
 
-(your answer; likelihood ÷ cost-to-check. Now that the OS is Ubuntu — SSH and journalctl available — how does that change the ordering vs. a fully-locked-down OS? When does SSH save you a serial-console hop, and when is it a *trap* that points you at the wrong layer?)
+(your answer; likelihood ÷ cost-to-check. Now that the OS is Ubuntu, SSH and journalctl available, how does that change the ordering vs. a fully-locked-down OS? When does SSH save you a serial-console hop, and when is it a *trap* that points you at the wrong layer?)
 
 ### 3. Observability at AI Cloud scale
 
-(your answer; the path a single line of `cloud-init.log` takes from node to support engineer in a 1000-node fleet — aggregation, retention, search, alerting; what `cloud-init collect-logs` adds on top of `journalctl`.)
+(your answer; the path a single line of `cloud-init.log` takes from node to support engineer in a 1000-node fleet, aggregation, retention, search, alerting; what `cloud-init collect-logs` adds on top of `journalctl`.)
 
 ### 4. Failures invisible without physical access
 
@@ -48,7 +48,7 @@ For each: symptom (customer-visible), originating layer, first three diagnostic 
 - [ ] 1. BMC unreachable
 - [ ] 2. DHCP misconfiguration
 - [ ] 3. Bad iPXE script
-- [ ] 4. Bad cloud-init user-data — installer-stage *and* target-stage sub-cases (distinguish them)
-- [ ] 5. Node provisions, kubelet won't start (cgroup-driver mismatch, kernel module missing, swap not actually disabled, CRI socket mismatch — pick one to induce)
+- [ ] 4. Bad cloud-init user-data, installer-stage *and* target-stage sub-cases (distinguish them)
+- [ ] 5. Node provisions, kubelet won't start (cgroup-driver mismatch, kernel module missing, swap not actually disabled, CRI socket mismatch, pick one to induce)
 
 ## Observations

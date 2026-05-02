@@ -6,11 +6,11 @@ Brief: [`../../milestone-07-day2.md`](../../milestone-07-day2.md)
 
 Pick at least two of three exercises (7a/7b/7c). 7d is design-only on paper.
 
-- [ ] `7a-os-upgrade/` — image build artifacts, rollout walkthrough, failure trace, scale analysis
+- [ ] `7a-os-upgrade/`, image build artifacts, rollout walkthrough, failure trace, scale analysis
   - [ ] `image-build/` (build scripts + the two image artifacts, or pointers to where they live)
   - [ ] `rollout-walkthrough.md` (timestamps, commands, what reconciled when)
   - [ ] `failure-trace.md` (deliberate failure: bad checksum / missing image URL / kubeadm-join failure)
-  - [ ] `scale-analysis.md` (what changes at 100x — image bandwidth, drain time, quorum windows)
+  - [ ] `scale-analysis.md` (what changes at 100x, image bandwidth, drain time, quorum windows)
 - [ ] `7b-decommission/walkthrough.md` and `failure-log.md`
 - [ ] `7c-credential-rotation/walkthrough.md` and `failure-log.md`
 - [ ] `7d-firmware-rollout-design.md` (paper design, not executed)
@@ -38,7 +38,7 @@ Pick at least two of three exercises (7a/7b/7c). 7d is design-only on paper.
 
 ### 4. Quorum, capacity, and the cost of a CP rebuild
 
-(your answer; 3-node CP during rollout has 0 tolerance — what does that mean operationally? Single-node CP rebuild = downtime — for how long? Production answer.)
+(your answer; 3-node CP during rollout has 0 tolerance, what does that mean operationally? Single-node CP rebuild = downtime, for how long? Production answer.)
 
 ### 5. Credential rotation atomicity
 
@@ -46,7 +46,7 @@ Pick at least two of three exercises (7a/7b/7c). 7d is design-only on paper.
 
 ### 6. Decommission and identity
 
-(your answer; MAC, BMC URL, serial — which should change when re-racking; what Ironic cleans by default.)
+(your answer; MAC, BMC URL, serial, which should change when re-racking; what Ironic cleans by default.)
 
 ### 7. vmetal day-2 automation vs. operator responsibility
 

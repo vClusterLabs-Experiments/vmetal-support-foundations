@@ -6,7 +6,7 @@ A bottom-up path to understanding the full stack vmetal runs on. The goal is con
 
 > ## 🛑 NOT AN ENDORSEMENT 🛑
 >
-> This curriculum runs everything at lab scale on a single Lima VM. That is not a production architecture. This curriculum is internal training material — not engineering or production guidance. Specific vmetal feature support (Auto Nodes, Private Node Tenant Clusters, supported OS images, sizing, GPU enablement) is governed by the official vmetal documentation and your vCluster Labs contact, not by anything written here.
+> This curriculum runs everything at lab scale on a single Lima VM. That is not a production architecture. This curriculum is internal training material, not engineering or production guidance. Specific vmetal feature support (Auto Nodes, Private Node Tenant Clusters, supported OS images, sizing, GPU enablement) is governed by the official vmetal documentation and your vCluster Labs contact, not by anything written here.
 
 ---
 

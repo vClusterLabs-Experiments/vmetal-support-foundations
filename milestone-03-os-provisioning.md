@@ -10,13 +10,13 @@ The flow mirrors what vmetal does in production at lab scale: an installer fetch
 - **The five-stage cloud-init boot model.** `Detect → init-local → init (network) → config → final`. Different stages, different network state, different logs. Triage starts with knowing which stage owns which problem.
 - **Two cloud-inits, one install.** Subiquity autoinstall is itself a cloud-init payload running in the live-server installer. The `autoinstall.user-data:` you nest inside it becomes the *target system's* cloud-init payload on first boot of the disk-installed OS. Same tool, two rootfses, two log paths with the same filename. Support engineers who don't internalize this split waste hours debugging the wrong system.
 - **Module frequency and re-run semantics.** cloud-init does not "run once forever." Some modules run every boot, some run once per `instance-id`, some run once per system. Reboots, image clones, and `cloud-init clean` all change the picture.
-- **The mutable-OS drift surface.** Ubuntu state lives across many places — apt, systemd, netplan, kubelet runtime state, containerd state, cloud-init's own cache. Knowing where it lives is the price of choosing a mutable distro; vmetal's customers chose it, and so do you.
+- **The mutable-OS drift surface.** Ubuntu state lives across many places, apt, systemd, netplan, kubelet runtime state, containerd state, cloud-init's own cache. Knowing where it lives is the price of choosing a mutable distro; vmetal's customers chose it, and so do you.
 
 ## Anchor question
 
 > What's the smallest amount of declarative state needed to turn a generic Ubuntu cloud image into a *specific* node?
 
-**Hint:** the NoCloud datasource only requires two files — `meta-data` (carrying a unique `instance-id`) and `user-data` (the cloud-config document). Everything else — hostname, users, SSH keys, disks, network, packages, `kubeadm` prereqs — flows from those two files plus the kernel cmdline that points the installer at them. Verify against `cloud-init query` on a running node before you commit to an answer.
+**Hint:** the NoCloud datasource only requires two files, `meta-data` (carrying a unique `instance-id`) and `user-data` (the cloud-config document). Everything else, hostname, users, SSH keys, disks, network, packages, `kubeadm` prereqs, flows from those two files plus the kernel cmdline that points the installer at them. Verify against `cloud-init query` on a running node before you commit to an answer.
 
 ## Stack
 
@@ -41,7 +41,7 @@ Two cloud-init runs happen across one provisioning cycle:
 1. **Installer-stage**, while the live-server ramdisk is running. Subiquity reads `autoinstall:` from the user-data, partitions the disk, runs `curtin` to install Ubuntu, then writes the *nested* `autoinstall.user-data:` to the target as the seed for the next stage.
 2. **Target-system**, on the first boot of the deployed Ubuntu OS. cloud-init reads the seed Subiquity left for it and applies hostname, users, SSH keys, packages, sysctls, and any `runcmd` you wrote.
 
-Both runs leave logs at `/var/log/cloud-init.log` — but on different rootfses. SSH into the wrong one and you're debugging the wrong system.
+Both runs leave logs at `/var/log/cloud-init.log`, but on different rootfses. SSH into the wrong one and you're debugging the wrong system.
 
 ## The provisioning chain you're proving works
 
@@ -170,7 +170,7 @@ cloud-init has to decide, at every boot, whether to apply `runcmd`/`users`/`writ
 
 ### 3. user-data vs. meta-data vs. vendor-data: why three documents?
 
-NoCloud expects (at minimum) `meta-data` and `user-data`, and optionally `vendor-data`. They look similar — all are cloud-config-shaped YAML — and a beginner's instinct is to merge them. Why does cloud-init keep them separate? Who is the intended author of each? What changes if a fleet operator wants to push a baseline config across thousands of nodes without touching per-node `user-data`?
+NoCloud expects (at minimum) `meta-data` and `user-data`, and optionally `vendor-data`. They look similar, all are cloud-config-shaped YAML, and a beginner's instinct is to merge them. Why does cloud-init keep them separate? Who is the intended author of each? What changes if a fleet operator wants to push a baseline config across thousands of nodes without touching per-node `user-data`?
 
 **Read first:**
 - [cloud-init: Instance metadata / vendor data](https://cloudinit.readthedocs.io/en/latest/explanation/instancedata.html), the layered model and merge semantics.
@@ -192,7 +192,7 @@ You SSH into a node where `cloud-init status` reports `error`. What's the first 
 
 ### 6. Mutable-OS drift at fleet scale
 
-Ubuntu's persistent disk surface is large: apt package state, systemd unit drops, netplan config, kubelet runtime state, containerd state, cloud-init's own cache, anything `runcmd` wrote. Across 500 nodes over a year, drift is inevitable. What patterns close the gap — golden images, periodic re-provision, config management (Ansible/Puppet), config snapshotting — and what's the operational tradeoff of each? Where does vmetal's "rebuild raw image, re-provision via Metal3" pattern (which you'll see in M7) sit in this spectrum?
+Ubuntu's persistent disk surface is large: apt package state, systemd unit drops, netplan config, kubelet runtime state, containerd state, cloud-init's own cache, anything `runcmd` wrote. Across 500 nodes over a year, drift is inevitable. What patterns close the gap, golden images, periodic re-provision, config management (Ansible/Puppet), config snapshotting, and what's the operational tradeoff of each? Where does vmetal's "rebuild raw image, re-provision via Metal3" pattern (which you'll see in M7) sit in this spectrum?
 
 **Read first:**
 - [Google SRE Book: Configuration design](https://sre.google/workbook/configuration-design/), the operational case for treating config as data and re-provisioning as the upgrade primitive.
@@ -201,9 +201,9 @@ Ubuntu's persistent disk surface is large: apt package state, systemd unit drops
 
 Work through these in order. Each one isolates a different layer of the cloud-init pipeline.
 
-1. **Bad YAML in user-data.** Introduce a tab character, or unquoted `:` in a value, or unbalanced indentation. Try to validate with `cloud-init schema --config-file`. Then serve it anyway; observe the failure mode in the live-server console. Where does the error surface — installer log, target log, or never-reaches-target?
+1. **Bad YAML in user-data.** Introduce a tab character, or unquoted `:` in a value, or unbalanced indentation. Try to validate with `cloud-init schema --config-file`. Then serve it anyway; observe the failure mode in the live-server console. Where does the error surface, installer log, target log, or never-reaches-target?
 2. **NoCloud fetch failure.** Stop your HTTP server (or strip the trailing slash from the `s=` cmdline). PXE the node. Observe `ds-identify`'s decision trace and the resulting timeout. Identify the file path and line in the log that points at "couldn't reach the seed URL."
-3. **`runcmd` failure mid-execution.** Add a `runcmd` step that runs a command guaranteed to fail (`/bin/false`, or `apt-get install fakepackage`). Boot. Where does the failure show up — `cloud-init status --long`? `cloud-init-output.log`? Does cloud-init halt or continue? What's the impact on subsequent modules?
+3. **`runcmd` failure mid-execution.** Add a `runcmd` step that runs a command guaranteed to fail (`/bin/false`, or `apt-get install fakepackage`). Boot. Where does the failure show up, `cloud-init status --long`? `cloud-init-output.log`? Does cloud-init halt or continue? What's the impact on subsequent modules?
 4. **`write_files` permission/path error.** Try to `write_files` to a path whose parent doesn't exist (`/opt/missing/dir/file.conf`). Try with a `permissions:` value that's invalid. Observe both. Does cloud-init fail loudly or silently skip?
 
 For each, write down:
@@ -213,17 +213,17 @@ For each, write down:
 
 ## A note on `runcmd`
 
-`runcmd` is imperative inside an otherwise declarative format. Whenever you reach for it, ask first: is there a structured cloud-init module that does this declaratively? `users`, `ssh_authorized_keys`, `write_files`, `packages`, `apt`, `ntp`, `timezone`, `disk_setup`, `mounts`, `bootcmd` — these cover most "do this once" needs.
+`runcmd` is imperative inside an otherwise declarative format. Whenever you reach for it, ask first: is there a structured cloud-init module that does this declaratively? `users`, `ssh_authorized_keys`, `write_files`, `packages`, `apt`, `ntp`, `timezone`, `disk_setup`, `mounts`, `bootcmd`, these cover most "do this once" needs.
 
-That said, `runcmd` is not a smell, and you'll see a lot of it. vmetal's production user-data uses `runcmd` to invoke the registration scripts that join private nodes to their tenant clusters — `kubeadm` itself is imperative, and wrapping it in `runcmd` is the honest way to express that. The rule of thumb: use `runcmd` for things that *are* genuinely imperative ("run this binary once at first boot"), and avoid using it for things that have a structured equivalent. Support engineers who recognize the difference triage faster.
+That said, `runcmd` is not a smell, and you'll see a lot of it. vmetal's production user-data uses `runcmd` to invoke the registration scripts that join private nodes to their tenant clusters, `kubeadm` itself is imperative, and wrapping it in `runcmd` is the honest way to express that. The rule of thumb: use `runcmd` for things that *are* genuinely imperative ("run this binary once at first boot"), and avoid using it for things that have a structured equivalent. Support engineers who recognize the difference triage faster.
 
 ## What is NOT in this milestone
 
 - No Kubernetes cluster yet. cloud-init has installed `kubelet`/`kubeadm`/`containerd` (or staged the prereqs to install them), but nothing has run `kubeadm init`. That's M4.
-- No CAPI, no Metal3, no Ironic. You are hand-rolling the cloud-init delivery via plain HTTP NoCloud. M5 replaces the delivery mechanism with Metal3 + ConfigDrive — but the cloud-init payload shape stays the same.
+- No CAPI, no Metal3, no Ironic. You are hand-rolling the cloud-init delivery via plain HTTP NoCloud. M5 replaces the delivery mechanism with Metal3 + ConfigDrive, but the cloud-init payload shape stays the same.
 - No second node yet. Provision one. M4 brings a worker.
 - No CNI, no pod CIDR, no `kubeadm` config. M4.
-- No HTTPS, no signed metadata. The seed server is plain HTTP — that's a real production concern called out in M4/M5/M7, not solved here.
+- No HTTPS, no signed metadata. The seed server is plain HTTP, that's a real production concern called out in M4/M5/M7, not solved here.
 - No Talos, no Flatcar, no Ignition. The curriculum has committed to cloud-init as the primitive. The immutable-OS lessons are not preserved here.
 
 ## Exit artifact

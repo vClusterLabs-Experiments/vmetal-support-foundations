@@ -22,7 +22,7 @@ Brief: [`../../milestone-04-cluster-bootstrap.md`](../../milestone-04-cluster-bo
 
 ### 1. Bootstrap chicken-and-egg
 
-(your answer; the kubeadm init phase list — preflight → certs → kubeconfig → control-plane → etcd → upload-config → upload-certs → mark-control-plane → bootstrap-token → kubelet-finalize → addon. Role of static-pod manifests in `/etc/kubernetes/manifests/` and the `kubeadm-config` ConfigMap.)
+(your answer; the kubeadm init phase list, preflight → certs → kubeconfig → control-plane → etcd → upload-config → upload-certs → mark-control-plane → bootstrap-token → kubelet-finalize → addon. Role of static-pod manifests in `/etc/kubernetes/manifests/` and the `kubeadm-config` ConfigMap.)
 
 ### 2. Bootstrap token: lifetime, scope, blast radius
 

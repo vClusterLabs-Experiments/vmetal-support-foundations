@@ -6,7 +6,7 @@
 
 > ## 🛑 NOT AN ENDORSEMENT 🛑
 >
-> This milestone runs vmetal at lab scale on Apple Silicon under TCG. That is not a production architecture. This curriculum is internal training material — not engineering or production guidance. Specific feature support (Auto Nodes, Private Node Tenant Clusters, supported OS images, sizing, GPU enablement) is governed by the official vmetal documentation and your vCluster Labs contact, not by anything written here.
+> This milestone runs vmetal at lab scale on Apple Silicon under TCG. That is not a production architecture. This curriculum is internal training material, not engineering or production guidance. Specific feature support (Auto Nodes, Private Node Tenant Clusters, supported OS images, sizing, GPU enablement) is governed by the official vmetal documentation and your vCluster Labs contact, not by anything written here.
 
 ---
 
@@ -110,7 +110,7 @@ This is empirical, answer from your observed failure. The reading is to ground "
 
 ### 6. runcmd-driven Tenant Cluster registration
 
-vmetal's user-data for Private Node Tenant Clusters includes registration scripts (delivered via cloud-init `runcmd`) on top of what CABPK alone would produce. Concretely: a freshly-provisioned Private Node has to know which Tenant Cluster it belongs to, register itself, and then complete `kubeadm join` against that Tenant Cluster — not the Control Plane Cluster that just provisioned it. Where in the M5 chain (`KubeadmConfig` → CABPK → Secret → BMH `userData` → Ironic ConfigDrive → cloud-init) does that customization land? Is the registration script a `runcmd` *prepended* to CABPK's output, *appended* after CABPK's `kubeadm join` line, or carried in a separate cloud-init document merged at delivery time? What does each placement imply when a support ticket says "Private Node provisioned, but never appeared in the Tenant Cluster"? Where do you SSH first?
+vmetal's user-data for Private Node Tenant Clusters includes registration scripts (delivered via cloud-init `runcmd`) on top of what CABPK alone would produce. Concretely: a freshly-provisioned Private Node has to know which Tenant Cluster it belongs to, register itself, and then complete `kubeadm join` against that Tenant Cluster, not the Control Plane Cluster that just provisioned it. Where in the M5 chain (`KubeadmConfig` → CABPK → Secret → BMH `userData` → Ironic ConfigDrive → cloud-init) does that customization land? Is the registration script a `runcmd` *prepended* to CABPK's output, *appended* after CABPK's `kubeadm join` line, or carried in a separate cloud-init document merged at delivery time? What does each placement imply when a support ticket says "Private Node provisioned, but never appeared in the Tenant Cluster"? Where do you SSH first?
 
 **Read first:**
 - [vmetal Architecture](https://vmetal.ai/docs/architecture/), the documented description of how vmetal generates user-data for Private Node registration.

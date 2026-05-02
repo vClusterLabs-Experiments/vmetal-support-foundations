@@ -119,7 +119,7 @@ Think: broadcast domains, credential blast radius, firmware update storms, the s
 
 - `notes.md`, five conceptual answers.
 - `runbooks/`, one-page diagnostic runbook per failure mode (5 runbooks).
-- `signals-by-layer.md`, your annotated diagnostic-surfaces table — the cheat sheet you'll consult during real tickets.
+- `signals-by-layer.md`, your annotated diagnostic-surfaces table, the cheat sheet you'll consult during real tickets.
 - `installer-vs-target.md`, a short note explaining how to tell from a customer's symptom whether they're SSH'd into the live-server installer or the deployed system. This is the single most common ticket-routing mistake.
 
 When all five runbooks are written and you can route a fresh symptom to the right layer in one read, you're ready for **Milestone 5: Cluster API + Metal3**, where the diagnostic surfaces above stop being your direct interface and start being inputs to a controller.
