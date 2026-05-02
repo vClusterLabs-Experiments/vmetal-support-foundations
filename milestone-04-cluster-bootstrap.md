@@ -106,7 +106,7 @@ autoinstall:
           ---
           apiVersion: kubeadm.k8s.io/v1beta4
           kind: ClusterConfiguration
-          kubernetesVersion: v1.30.8
+          kubernetesVersion: v1.35.3
           controlPlaneEndpoint: "node01.lab:6443"
           networking:
             podSubnet: "192.168.0.0/16"
@@ -123,31 +123,50 @@ autoinstall:
       - modprobe overlay
       - modprobe br_netfilter
       - sysctl --system
-      # containerd: write default config, set SystemdCgroup, enable CRI plugin
+      # containerd: write default config (CRI enabled by default in `containerd config default`),
+      # flip cgroup driver to systemd. We'll align sandbox_image after kubeadm is installed.
       - mkdir -p /etc/containerd
       - containerd config default > /etc/containerd/config.toml
       - sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
-      - sed -i 's/^disabled_plugins = \["cri"\]/disabled_plugins = []/' /etc/containerd/config.toml
-      - systemctl restart containerd
-      # Kubernetes apt repo (pinned to v1.30; bump per the version you're teaching)
+      # Kubernetes apt repo (pinned to v1.35; bump per the version you're teaching).
       - install -d -m 0755 /etc/apt/keyrings
-      - curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
-      - echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /' > /etc/apt/sources.list.d/kubernetes.list
+      - curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.35/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+      - echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.35/deb/ /' > /etc/apt/sources.list.d/kubernetes.list
       - apt-get update
       - apt-get install -y kubelet kubeadm kubectl
       - apt-mark hold kubelet kubeadm kubectl
+      # Now that kubeadm is on disk, ask it which pause image this K8s minor wants
+      # and pin sandbox_image to match. Avoids a kubelet warning + per-node pull on first boot.
+      # Order matters: this must run AFTER `apt-get install kubeadm` and BEFORE `systemctl restart containerd`.
+      - PAUSE_IMG=$(kubeadm config images list --kubernetes-version=v1.35.3 | grep pause)
+      - sed -i "s#sandbox_image = .*#sandbox_image = \"${PAUSE_IMG}\"#" /etc/containerd/config.toml
+      - systemctl restart containerd
       # kubeadm init
       - kubeadm init --config=/etc/kubernetes/kubeadm-init.yaml
       # CNI (Calico) — apply with the admin kubeconfig kubeadm wrote
-      - KUBECONFIG=/etc/kubernetes/admin.conf kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.28.0/manifests/calico.yaml
+      - KUBECONFIG=/etc/kubernetes/admin.conf kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.30.0/manifests/calico.yaml
 ```
 
-The worker user-data is structurally the same up through the apt-install line, but ends with `kubeadm join` instead of `kubeadm init`:
+The worker user-data is structurally the same up through the apt-install line, but ends with `kubeadm join` driven by a `JoinConfiguration` (so `criSocket` is pinned the same way the CP pins it via `InitConfiguration`):
 
 ```yaml
+    write_files:
+      - path: /etc/kubernetes/kubeadm-join.yaml
+        content: |
+          ---
+          apiVersion: kubeadm.k8s.io/v1beta4
+          kind: JoinConfiguration
+          discovery:
+            bootstrapToken:
+              token: "<token-from-CP>"
+              apiServerEndpoint: "node01.lab:6443"
+              caCertHashes:
+                - "sha256:<hash-from-CP>"
+          nodeRegistration:
+            criSocket: "unix:///var/run/containerd/containerd.sock"
     runcmd:
       # ... (same prereqs as above through `apt-mark hold`) ...
-      - kubeadm join node01.lab:6443 --token <token-from-CP> --discovery-token-ca-cert-hash sha256:<hash-from-CP>
+      - kubeadm join --config=/etc/kubernetes/kubeadm-join.yaml
 ```
 
 You get `<token>` and `<hash>` by running, on `node01` after `kubeadm init` has completed:

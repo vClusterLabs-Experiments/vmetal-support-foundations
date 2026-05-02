@@ -17,7 +17,7 @@
 
 > The cloud-init payload you wrote by hand in M3 still runs at first boot — but you didn't write it this time. Who wrote it, where does it live in Kubernetes, and how did it reach the disk?
 
-Answer skeleton: a **CABPK controller** watching `KubeadmConfig` objects renders cloud-config YAML and writes a Secret (key `value`, payload commonly gzip-compressed). A **Metal3Machine controller** binds that Secret reference into the `BareMetalHost.spec.userData` field. The **Bare Metal Operator** instructs **Ironic** to deploy the host: Ironic powers it on via Redfish, the **Ironic Python Agent (IPA)** boots from RAM, writes the OS image to disk, *and writes a ConfigDrive partition (label `config-2`) containing the user-data*. The host reboots; cloud-init's ConfigDrive datasource reads the partition; first-boot `runcmd` runs `kubeadm init`/`join`. Same payload as M3, different mailman.
+Answer skeleton: a **CABPK controller** watching `KubeadmConfig` objects renders cloud-config YAML and writes a Secret. The contract is fixed: data key is `value`, and for `format: cloud-config` (the Ubuntu/cloud-init path this curriculum uses) the payload is gzip-compressed before being base64-encoded into the Secret. A **Metal3Machine controller** binds that Secret reference into the `BareMetalHost.spec.userData` field. The **Bare Metal Operator** instructs **Ironic** to deploy the host: Ironic powers it on via Redfish, the **Ironic Python Agent (IPA)** boots from RAM, writes the OS image to disk, *and writes a ConfigDrive partition (label `config-2`) containing the user-data*. The host reboots; cloud-init's ConfigDrive datasource reads the partition; first-boot `runcmd` runs `kubeadm init`/`join`. Same payload as M3, different mailman.
 
 ## Stack
 
@@ -70,10 +70,12 @@ The Lima VM hosts a Kubernetes management cluster (in kind/k3s) whose only job i
    # Find the Secret CABPK wrote.
    kubectl -n <ns> get kubeadmconfig <kc> -o jsonpath='{.status.dataSecretName}'
 
-   # Decode the Secret. Payload is commonly gzip-compressed cloud-config.
+   # Decode the Secret. For format=cloud-config (this curriculum's path),
+   # CABPK gzip-compresses the payload before base64-encoding it into the Secret.
    kubectl -n <ns> get secret <machine>-bootstrap-data \
      -o jsonpath='{.data.value}' | base64 -d | gunzip
-   # If gunzip fails on a particular release, try base64 -d only.
+   # (Other bootstrap providers — e.g. ignition for Flatcar/Talos — skip the gzip step;
+   # not in scope for this curriculum.)
 
    # Confirm Metal3 wired the Secret into the BareMetalHost.
    kubectl -n <ns> get bmh <name> -o yaml | grep -A 2 userData
@@ -83,7 +85,7 @@ The Lima VM hosts a Kubernetes management cluster (in kind/k3s) whose only job i
 
 5. **Delete the workload cluster.** Watch the BareMetalHosts deprovision and return to `available`. Re-apply the same manifests; watch CAPI reprovision from scratch with new tokens, fresh certs, a freshly-generated bootstrap Secret.
 6. **Reconciliation test.** While a node is `provisioned`, manually power it off via direct `virsh destroy`. Watch the controllers notice and react. What does Metal3 do? What does the `KubeadmControlPlane` controller do? What does the `MachineDeployment` controller do? Each layer reconciles its own desired state.
-7. **Image + userData inspection.** `kubectl get bmh <name> -o yaml` and identify each of: `spec.image.url`, `spec.image.checksum`, `spec.image.format`, `spec.userData.{name,namespace}`, `spec.networkData`, `spec.metaData`. Trace the image URL back to whoever served it (M7 will have you build the image yourself).
+7. **Image + userData inspection.** `kubectl get bmh <name> -o yaml` and identify each of: `spec.image.url`, `spec.image.checksum`, `spec.image.checksumType`, `spec.image.format`, `spec.userData.{name,namespace}`, `spec.networkData`, `spec.metaData`. Trace the image URL back to whoever served it (M7 will have you build the image yourself).
 
 ## The "follow the user-data" trace, drawn explicitly
 

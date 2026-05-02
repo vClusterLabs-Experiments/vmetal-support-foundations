@@ -138,8 +138,10 @@ local-hostname: node01
 Kernel cmdline (in your iPXE script, on the `kernel` line):
 
 ```text
-autoinstall ds=nocloud-net;s=http://10.0.0.1/seed/ ip=dhcp ---
+autoinstall 'ds=nocloud-net;s=http://10.0.0.1/seed/' ip=dhcp ---
 ```
+
+The single quotes are mandatory: without them, the shell that builds the iPXE/GRUB cmdline splits on `;` and only `autoinstall ds=nocloud-net` reaches the kernel.
 
 Three traps you will hit and want to remember:
 

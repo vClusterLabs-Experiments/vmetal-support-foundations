@@ -49,12 +49,12 @@ Upgrade the Ubuntu OS image on a 2-node cluster (1 CP, 1 worker) without losing 
 - **[image-builder](https://github.com/kubernetes-sigs/image-builder)**, the Cluster API project's image builder. Supports raw output, baked-in Kubernetes packages, customizable kernel selection. Closest to what AI Cloud production stacks use.
 - **[Packer](https://www.packer.io/)** + an Ubuntu cloud-image base. More general-purpose; you write the provisioning script yourself.
 
-Build image N+1 with a meaningful difference — bump the kernel (`linux-image-generic-hwe-…`), bump the Kubernetes minor (`kubelet`/`kubeadm`/`kubectl` v1.30 → v1.31, respecting upstream skew policy), or both. Capture the build artifact (the `.img` and its `.sha256`) under your HTTP server's image directory.
+Build image N+1 with a meaningful difference — bump the kernel (`linux-image-generic-hwe-…`), bump the Kubernetes minor (`kubelet`/`kubeadm`/`kubectl` v1.35 → v1.36, respecting upstream skew policy), or both. Capture the build artifact (the `.img` and its `.sha256`) under your HTTP server's image directory.
 
 **Rollout semantics.**
 
 - **Worker rollout:** parallelism allowed up to PodDisruptionBudget. Drain → image swap → reprovision → rejoin. PDB is the throttle.
-- **CP rollout:** sequential, drain-aware, **bounded by etcd quorum tolerance.** A 3-node CP can lose one member and stay healthy. During a CP rebuild on a 3-node cluster you've reduced quorum tolerance to zero — *if a second CP fails for any reason*, the cluster is read-only until quorum returns. Discuss the implications. Now imagine you're rolling a 5-node CP, then a single-CP cluster (which has *no* tolerance — the cluster is unavailable for the duration).
+- **CP rollout:** sequential, drain-aware, **bounded by etcd quorum tolerance.** The math: for `n` etcd members, `quorum = ⌊n/2⌋ + 1` and `tolerated_failures = ⌊(n − 1)/2⌋`. A 3-node CP tolerates one failure. During a CP rebuild on a 3-node cluster you've reduced effective tolerance to zero — *if a second CP fails for any reason while the first is being rebuilt*, etcd loses quorum and the apiserver cannot service writes (control-plane changes blocked) until quorum returns. Discuss the implications. Now imagine you're rolling a 5-node CP (quorum 3, tolerance 2 — one rebuild leaves tolerance 1, still safe), then a single-CP cluster (quorum 1, tolerance 0 — the cluster is unavailable for the duration of the rebuild).
 
 **What to write up:**
 - The image build (commands you ran, time it took, output).
@@ -144,7 +144,16 @@ What's the version-skew rule, and what's the failure mode if you reverse it? Wal
 
 ### 4. Quorum, capacity, and the cost of a CP rebuild
 
-A 3-node CP tolerates 1 failure. During a CP rollout, you've taken the tolerance to 0 *for the duration of one node's rebuild*. What does that mean operationally? On a single-node CP (your lab), a CP rebuild means cluster downtime — for how long? What's the production answer? (Hint: 5-node CP, but it's not just "more nodes.")
+A 3-node CP tolerates 1 failure. During a CP rollout, you've taken the tolerance to 0 *for the duration of one node's rebuild*. What does that mean operationally? On a single-node CP (your lab), a CP rebuild means cluster downtime — for how long? What's the production answer? (Hint: 5-node CP, but it's not just "more nodes." The math:
+
+| n | quorum ⌊n/2⌋+1 | tolerance ⌊(n−1)/2⌋ | tolerance during 1 rebuild |
+|---|---|---|---|
+| 1 | 1 | 0 | -1 (downtime) |
+| 3 | 2 | 1 | 0 |
+| 5 | 3 | 2 | 1 |
+| 7 | 4 | 3 | 2 |
+
+5-node is the production answer because it preserves 1 failure of headroom *during* a rolling rebuild; 7-node is the cost-vs-tolerance line most operators stop at.)
 
 **Read first:**
 - [etcd: Clustering Guide](https://etcd.io/docs/v3.5/op-guide/clustering/), the quorum math.
