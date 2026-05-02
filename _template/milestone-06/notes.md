@@ -38,7 +38,11 @@ Brief: [`../../milestone-06-vmetal.md`](../../milestone-06-vmetal.md)
 
 (your answer)
 
-### 6. Customer evaluating vmetal vs. rolling CAPI+Metal3 themselves: case for each?
+### 6. runcmd-driven Tenant Cluster registration: where in the M5 cloud-init chain (KubeadmConfig → CABPK → Secret → BMH userData → Ironic ConfigDrive → cloud-init) does vmetal's Private Node registration script slot in?
+
+(your answer, prepended/appended/separate document, and where you'd SSH first when a Private Node provisions but never appears in its Tenant Cluster)
+
+### 7. Customer evaluating vmetal vs. rolling CAPI+Metal3 themselves: case for each?
 
 (your answer, when does the abstraction earn its weight, when is it overhead?)
 
