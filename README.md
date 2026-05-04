@@ -17,16 +17,24 @@ A bottom-up path to understanding the full stack vmetal runs on. The goal is con
 - The durable artifact at every milestone is `notes.md`, your written answers to the conceptual questions. Configs and scripts are throwaway.
 - Only M7 is optional; the `.5` interludes (M3.5, M4.5) are required, M5 depends on both.
 
+## Get started
+
+1. Mac with [Lima](https://lima-vm.io/docs/) installed (Apple Silicon supported, see [notes](#apple-silicon-notes) below).
+2. Copy the workspace skeleton: `cp -r _template lab/vmetal` (the `lab/` tree is gitignored; it's where your `notes.md` and throwaway configs go).
+3. Open [Milestone 1](./milestone-01-bmc.md). Each brief is self-contained: read it top to bottom, follow its reading list, write your answers in `lab/vmetal/milestone-XX/notes.md`.
+
 ## Milestones
+
+**Path:** BMC → network boot → OS provisioning → cluster bootstrap → declarative orchestration → vmetal. Bottom-up by abstraction layer; see [Why this order](#why-this-order).
 
 | # | File | One-line summary |
 |---|---|---|
 | 1 | [milestone-01-bmc.md](./milestone-01-bmc.md) | Drive a Redfish API to power a fake server on/off. Learn the BMC contract. |
 | 2 | [milestone-02-netboot.md](./milestone-02-netboot.md) | PXE / DHCP / TFTP / iPXE. Boot a diskless node off the network. |
 | 3 | [milestone-03-os-provisioning.md](./milestone-03-os-provisioning.md) | Provision Ubuntu by netboot + Subiquity autoinstall + cloud-init over HTTP. Generic image becomes a specific node. |
-| 3.5 | [milestone-03-5-inventory.md](./milestone-03-5-inventory.md) | How does the orchestrator learn what hardware exists? |
+| 3.5 | [milestone-03-5-inventory.md](./milestone-03-5-inventory.md) | *(required interlude)* How does the orchestrator learn what hardware exists? |
 | 4 | [milestone-04-cluster-bootstrap.md](./milestone-04-cluster-bootstrap.md) | Bring up single-node K8s and join a PXE-provisioned worker, by hand. |
-| 4.5 | [milestone-04-5-observability.md](./milestone-04-5-observability.md) | Induce failures across the chain. Build diagnostic runbooks. |
+| 4.5 | [milestone-04-5-observability.md](./milestone-04-5-observability.md) | *(required interlude)* Induce failures across the chain. Build diagnostic runbooks. |
 | 5 | [milestone-05-capi-metal3.md](./milestone-05-capi-metal3.md) | Replace every manual step with declarative CRs. CAPI + Metal3 + Ironic. |
 | 6 | [milestone-06-vmetal.md](./milestone-06-vmetal.md) | Install vmetal. Map every CRD to a layer below. Articulate the delta. |
 | 7 | [milestone-07-day2.md](./milestone-07-day2.md) | *(optional)* Upgrades, decommission, credential rotation. Where real fleet pain lives. |

@@ -215,7 +215,7 @@ For each, write down:
 
 `runcmd` is imperative inside an otherwise declarative format. Whenever you reach for it, ask first: is there a structured cloud-init module that does this declaratively? `users`, `ssh_authorized_keys`, `write_files`, `packages`, `apt`, `ntp`, `timezone`, `disk_setup`, `mounts`, `bootcmd`, these cover most "do this once" needs.
 
-That said, `runcmd` is not a smell, and you'll see a lot of it. vmetal's production user-data uses `runcmd` to invoke the registration scripts that join private nodes to their tenant clusters, `kubeadm` itself is imperative, and wrapping it in `runcmd` is the honest way to express that. The rule of thumb: use `runcmd` for things that *are* genuinely imperative ("run this binary once at first boot"), and avoid using it for things that have a structured equivalent. Support engineers who recognize the difference triage faster.
+In practice, `runcmd` is not a smell, and you'll see a lot of it. vmetal's production user-data uses `runcmd` to invoke the registration scripts that join private nodes to their tenant clusters, `kubeadm` itself is imperative, and wrapping it in `runcmd` is the honest way to express that. The rule of thumb: use `runcmd` for things that *are* genuinely imperative ("run this binary once at first boot"), and avoid using it for things that have a structured equivalent. Support engineers who recognize the difference triage faster.
 
 ## What is NOT in this milestone
 

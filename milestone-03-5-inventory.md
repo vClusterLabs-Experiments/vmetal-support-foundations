@@ -22,7 +22,7 @@ Add a second fake node (`node02`) and a third (`node03`) to your libvirt setup. 
 
 1. Implement **strategy 1** (manual): write a YAML inventory file by hand listing each node's MAC, BMC URL, and credentials. Feed it into a script that hits Redfish on each.
 2. Implement **strategy 2** (auto-enrollment): boot a node into a tiny Linux image (Alpine + a script) that POSTs its MAC, CPU, memory, and disk info to your HTTP server. Watch the inventory grow without you typing anything.
-3. Sketch (don't fully build) **strategy 3**: how would you aggregate three sushy-tools instances behind one Redfish endpoint? What does the data model look like? Note that in production, aggregation usually happens *above* Redfish, at a chassis manager (Dell OME, HPE OneView) or at the orchestrator (Metal3's Ironic conductor pool), not via a true Redfish `AggregationService`. Sketch the pure-Redfish version anyway; the contrast is the point.
+3. Sketch (don't fully build) **strategy 3**: how would you aggregate three sushy-tools instances behind one Redfish endpoint? What does the data model look like? In production, aggregation usually happens *above* Redfish, at a chassis manager (Dell OME, HPE OneView) or at the orchestrator (Metal3's Ironic conductor pool), not via a true Redfish `AggregationService`. Sketch the pure-Redfish version anyway; the contrast is the point.
 
 ## Reading list
 
