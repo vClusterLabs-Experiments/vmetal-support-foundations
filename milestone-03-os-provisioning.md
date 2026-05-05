@@ -61,7 +61,7 @@ Both runs leave logs at `/var/log/cloud-init.log`, but on different rootfses. SS
 
 Steps 1–3 are M1/M2. Steps 4–11 are this milestone. Every layer above (cluster bootstrap, vmetal) is a variation on what cloud-init runs in steps 10–11.
 
-## Reading list
+## Reference index
 
 | Topic | Source |
 |---|---|
@@ -72,17 +72,20 @@ Steps 1–3 are M1/M2. Steps 4–11 are this milestone. Every layer above (clust
 | cloud-init schema validation | `cloud-init schema --config-file user-data.yaml`, run on the workstation before you serve it |
 | Ubuntu live-server autoinstall | [Ubuntu Server: Automated install introduction](https://canonical-subiquity.readthedocs-hosted.com/en/latest/intro-to-autoinstall.html) and [Autoinstall reference](https://canonical-subiquity.readthedocs-hosted.com/en/latest/reference/autoinstall-reference.html), the format Subiquity reads |
 | Ubuntu netboot installer | [Ubuntu Server: Netboot install](https://canonical-subiquity.readthedocs-hosted.com/en/latest/howto/install-netboot.html), kernel/initrd locations and required cmdline |
-| Subiquity `late-commands` vs. target user-data | [Autoinstall reference: late-commands](https://canonical-subiquity.readthedocs-hosted.com/en/latest/reference/autoinstall-reference.html#late-commands), where each kind of "do this once" lives |
 | Mutable-OS drift, for support context | [Google SRE Book: Configuration design and best practices](https://sre.google/workbook/configuration-design/), the operational case for treating config as data, not as a sequence of commands |
 
 ## Success criteria
 
 1. **PXE-boot the Ubuntu live-server installer.** Your iPXE script (from M2) chainloads the Ubuntu netboot `linux` and `initrd` from your HTTP server, with kernel cmdline including `autoinstall ds=nocloud-net;s=http://<your-http-server>/seed/`. Console shows the live-server boot.
+   **Reference:** [Ubuntu Server: Netboot install](https://canonical-subiquity.readthedocs-hosted.com/en/latest/howto/install-netboot.html), the kernel/initrd locations and required cmdline shape Subiquity expects.
 2. **Subiquity completes a hands-off install.** No keyboard input. The installer finds your `meta-data` and `user-data`, sees `autoinstall:`, partitions the disk, installs Ubuntu, and reboots. Time it: re-runs should be reproducible.
+   **Reference:** [Ubuntu Server: Automated install introduction](https://canonical-subiquity.readthedocs-hosted.com/en/latest/intro-to-autoinstall.html) and the [Autoinstall reference](https://canonical-subiquity.readthedocs-hosted.com/en/latest/reference/autoinstall-reference.html), the format Subiquity reads.
 3. **Target cloud-init applies the nested user-data on first boot.** After reboot, `cloud-init status --wait --long` reports `done`. The hostname, your user account, and your SSH key are present. SSH in as the user you defined, not via password.
 4. **You can read the diagnostic surface fluently.** From the deployed node: `cloud-init status --long`, `cloud-init query --list-keys`, `cloud-init query v1.instance_id`, `cloud-init analyze blame`. Locate `/var/log/cloud-init.log`, `/var/log/cloud-init-output.log`, `/run/cloud-init/instance-data.json`, and `/var/lib/cloud/instance/user-data.txt`. Be able to point at the file that proves cloud-init saw your seed.
+   **Reference:** [cloud-init: Logging](https://cloudinit.readthedocs.io/en/latest/reference/logging.html), the canonical map of log files and what each contains.
 5. **Re-provision with a changed user-data.** Change one field (hostname, an extra package, a new `runcmd`), wipe the disk, PXE again, observe the new identity. Prove the disk has no hidden state surviving a wipe.
 6. **Validate user-data before serving it.** Run `cloud-init schema --config-file user-data.yaml` on your workstation. Catch one schema error on purpose (e.g., misspell `runcmd` as `runcmds`); confirm the validator surfaces it.
+   **Reference:** `cloud-init schema --help`, the on-box reference for the validator's flags and exit codes.
 
 ## Reference user-data shape
 
@@ -203,7 +206,9 @@ Work through these in order. Each one isolates a different layer of the cloud-in
 
 1. **Bad YAML in user-data.** Introduce a tab character, or unquoted `:` in a value, or unbalanced indentation. Try to validate with `cloud-init schema --config-file`. Then serve it anyway; observe the failure mode in the live-server console. Where does the error surface, installer log, target log, or never-reaches-target?
 2. **NoCloud fetch failure.** Stop your HTTP server (or strip the trailing slash from the `s=` cmdline). PXE the node. Observe `ds-identify`'s decision trace and the resulting timeout. Identify the file path and line in the log that points at "couldn't reach the seed URL."
+   **Reference:** [cloud-init: NoCloud datasource](https://cloudinit.readthedocs.io/en/latest/reference/datasources/nocloud.html), the seed-URL format and the trailing-slash gotcha that produces this failure.
 3. **`runcmd` failure mid-execution.** Add a `runcmd` step that runs a command guaranteed to fail (`/bin/false`, or `apt-get install fakepackage`). Boot. Where does the failure show up, `cloud-init status --long`? `cloud-init-output.log`? Does cloud-init halt or continue? What's the impact on subsequent modules?
+   **Reference:** [cloud-init: Module frequency](https://cloudinit.readthedocs.io/en/latest/reference/modules.html), the per-instance vs. per-boot semantics that govern whether a failed `runcmd` re-runs.
 4. **`write_files` permission/path error.** Try to `write_files` to a path whose parent doesn't exist (`/opt/missing/dir/file.conf`). Try with a `permissions:` value that's invalid. Observe both. Does cloud-init fail loudly or silently skip?
 
 For each, write down:

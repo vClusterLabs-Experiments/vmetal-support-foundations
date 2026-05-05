@@ -19,6 +19,8 @@
 
 Answer skeleton: a **CABPK controller** watching `KubeadmConfig` objects renders cloud-config YAML and writes a Secret. The contract is fixed: data key is `value`, and for `format: cloud-config` (the Ubuntu/cloud-init path this curriculum uses) the payload is gzip-compressed before being base64-encoded into the Secret. A **Metal3Machine controller** binds that Secret reference into the `BareMetalHost.spec.userData` field. The **Bare Metal Operator** instructs **Ironic** to deploy the host: Ironic powers it on via Redfish, the **Ironic Python Agent (IPA)** boots from RAM, writes the OS image to disk, *and writes a ConfigDrive partition (label `config-2`) containing the user-data*. The host reboots; cloud-init's ConfigDrive datasource reads the partition; first-boot `runcmd` runs `kubeadm init`/`join`. Same payload as M3, different mailman.
 
+**Read first:** [cloud-init: ConfigDrive datasource](https://cloudinit.readthedocs.io/en/latest/reference/datasources/configdrive.html), the OpenStack-style `config-2` seed format Ironic materializes on the deployed disk, and the file paths cloud-init reads on first boot.
+
 ## Stack
 
 ```text
@@ -41,7 +43,7 @@ The Lima VM hosts a Kubernetes management cluster (in kind/k3s) whose only job i
 >
 > **Linkback to M3:** keep your `seed/user-data` from M3 open in a second pane. You'll be diffing it against the Secret CABPK generates.
 
-## Reading list
+## Reference index
 
 | Topic | Source |
 |---|---|
@@ -60,6 +62,7 @@ The Lima VM hosts a Kubernetes management cluster (in kind/k3s) whose only job i
 1. **Management cluster running** with CAPI core + CABPK + KCP + Metal3 provider + Bare Metal Operator + Ironic installed.
 2. **Three `BareMetalHost` CRs registered**, each pointing at sushy-tools BMC URLs and credentials. Watch one go through the BMH state machine: `registering → inspecting → available`. Observe Ironic driving Redfish under the hood (compare against your M1 manual `curl`s).
 3. **Apply a `Cluster` + `KubeadmControlPlane` + `MachineDeployment` (workers) + `Metal3MachineTemplate`s + `KubeadmConfigTemplate` (workers)** and watch the management cluster provision a workload cluster automatically across your three fake nodes. The first CP node gets full `kubeadm init`; later workers get `kubeadm join`.
+   **Reference:** [CAPI: Kubeadm-based control plane](https://cluster-api.sigs.k8s.io/developer/architecture/controllers/control-plane.html), the controller that drives `kubeadm init` and `kubeadm join --control-plane` in this flow.
 4. **Follow the user-data, the central exercise.** For one of the provisioned `Machine`s, walk the chain end-to-end with `kubectl`:
 
    ```bash

@@ -52,11 +52,12 @@ The BMC and the server are the same scaffolding you built in M1. The new layer i
 
 Steps 1–2 are Milestone 1. Steps 3–10 are this milestone. Every layer above (OS install, cluster bootstrap, vmetal) is a variation on step 9.
 
-## Reading list
+## Reference index
 
 | Topic | Source |
 |---|---|
-| PXE/DHCP boot options | [RFC 4578](https://datatracker.ietf.org/doc/html/rfc4578) and [RFC 5970](https://datatracker.ietf.org/doc/html/rfc5970), use as protocol references, not first-pass tutorials |
+| UEFI/PXE DHCP options | [RFC 5970](https://datatracker.ietf.org/doc/html/rfc5970), the modern UEFI/PXE DHCP option set; protocol reference, not a first-pass tutorial |
+| Redfish state ownership | [Ironic: Redfish driver](https://docs.openstack.org/ironic/latest/admin/drivers/redfish.html), the boot-mode and virtual-media sections cover `BootSourceOverrideEnabled` Once vs. Continuous and vendor interoperability gotchas |
 | iPXE: what and why | [iPXE documentation](https://ipxe.org/docs), start with the "Starting iPXE" and "DHCP" how-tos |
 | iPXE scripting | [ipxe.org/scripting](https://ipxe.org/scripting), the language is tiny, learn all of it |
 | iPXE chainloading | [ipxe.org/howto/chainloading](https://ipxe.org/howto/chainloading), the PXE-to-iPXE handoff |
@@ -69,12 +70,15 @@ Steps 1–2 are Milestone 1. Steps 3–10 are this milestone. Every layer above 
 ## Success criteria
 
 1. **Boot-device override (deferred from M1).** Set `Boot.BootSourceOverrideTarget=Pxe` via Redfish with `BootSourceOverrideEnabled=Once`, power-cycle, observe one PXE attempt, and confirm the override clears. Repeat with `Continuous` and confirm the override survives multiple cycles. The flag's downstream consequence, actually doing PXE, is what the rest of this milestone proves.
+   **Reference:** [Ironic: Redfish driver](https://docs.openstack.org/ironic/latest/admin/drivers/redfish.html), the boot-mode and virtual-media sections name the exact `BootSourceOverrideEnabled` semantics and vendor gotchas.
 2. Power-cycle `node01` via Redfish (Milestone 1 still works) and watch it PXE-boot end-to-end into an iPXE prompt or a netboot.xyz menu.
 3. Capture the DHCP exchange (`tcpdump -i virbr-prov -n port 67 or port 68`) and identify each of the four packets: DISCOVER, OFFER, REQUEST, ACK. Identify which DHCP options carry the boot instructions.
+   **Reference:** [RFC 2132](https://datatracker.ietf.org/doc/html/rfc2132), the DHCP option registry; options 66 (next-server) and 67 (boot filename) are what you'll see in the OFFER/ACK.
 4. Demonstrate the **two-stage DHCP**: the firmware's first DHCP, then iPXE's second DHCP after it loads. Explain why iPXE asks again instead of reusing the first lease.
 5. Serve a custom iPXE script over HTTP that prints a unique string and halts. Prove the node executed *your* script, not a default.
 6. Change one byte of your iPXE script, power-cycle the node, and see the change reflected, proving the node holds no boot state of its own between cycles.
 7. Break it on purpose: stop the TFTP server, power-cycle, observe the failure mode in the QEMU console. Then stop dnsmasq entirely and observe the different failure mode. You should be able to diagnose either failure from the symptoms alone.
+   **Reference:** `man dnsmasq`, the `--log-dhcp` and `--log-queries` flags surface why DHCP/TFTP responses do or don't go out; turn them on while inducing each failure.
 
 ## Conceptual questions
 

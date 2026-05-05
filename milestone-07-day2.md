@@ -53,6 +53,8 @@ Build image N+1 with a meaningful difference, bump the kernel (`linux-image-gene
 
 **Rollout semantics.**
 
+**Reference:** [CAPI: MachineDeployment controller](https://cluster-api.sigs.k8s.io/developer/core/controllers/machine-deployment) and [CAPI: upgrading clusters](https://cluster-api.sigs.k8s.io/tasks/upgrading-clusters), surge/maxUnavailable for workers and KubeadmControlPlane rollout semantics for the CP.
+
 - **Worker rollout:** parallelism allowed up to PodDisruptionBudget. Drain → image swap → reprovision → rejoin. PDB is the throttle.
 - **CP rollout:** sequential, drain-aware, **bounded by etcd quorum tolerance.** The math: for `n` etcd members, `quorum = ⌊n/2⌋ + 1` and `tolerated_failures = ⌊(n − 1)/2⌋`. A 3-node CP tolerates one failure. During a CP rebuild on a 3-node cluster you've reduced effective tolerance to zero, *if a second CP fails for any reason while the first is being rebuilt*, etcd loses quorum and the apiserver cannot service writes (control-plane changes blocked) until quorum returns. Discuss the implications. Now imagine you're rolling a 5-node CP (quorum 3, tolerance 2, one rebuild leaves tolerance 1, still safe), then a single-CP cluster (quorum 1, tolerance 0, the cluster is unavailable for the duration of the rebuild).
 
@@ -69,6 +71,7 @@ Build image N+1 with a meaningful difference, bump the kernel (`linux-image-gene
 Permanently remove `node02` from the fleet.
 
 - What state on the node must be wiped before re-using the hardware? (Hint: `kubeadm reset`, then Ironic cleaning, then BMC password rotation if the hardware moves between trust zones.)
+  **Reference:** [Kubernetes: kubeadm reset](https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-reset/) and [Ironic: cleaning steps](https://docs.openstack.org/ironic/latest/admin/cleaning.html), the two cleanup primitives this exercise chains together.
 - What state in the management cluster must be cleaned up? (Machine, BareMetalHost, kubeadm join references, any CSRs, lingering Secrets.)
 - What happens if you skip a step? (Try it. Observe the orphan state.)
 
@@ -91,7 +94,7 @@ The fourth day-2 operation, included as a sketch because doing it on libvirt/sus
 
 Write the design as `firmware-rollout-design.md`; do not attempt to execute it.
 
-## Reading list
+## Reference index
 
 | Topic | Source |
 |---|---|
@@ -100,7 +103,6 @@ Write the design as `firmware-rollout-design.md`; do not attempt to execute it.
 | Cluster API rolling updates | [CAPI: MachineDeployment controller](https://cluster-api.sigs.k8s.io/developer/core/controllers/machine-deployment) and [CAPI: upgrading clusters](https://cluster-api.sigs.k8s.io/tasks/upgrading-clusters), surge/maxUnavailable, KubeadmControlPlane rollout semantics |
 | Kubernetes node drain | [Kubernetes: Safely Drain a Node](https://kubernetes.io/docs/tasks/administer-cluster/safely-drain-node/) |
 | K8s version skew policy | [Kubernetes: Version skew policy](https://kubernetes.io/releases/version-skew-policy/), kubelet ≤ apiserver, three-minor-version window |
-| etcd day-2 maintenance | [etcd: Maintenance](https://etcd.io/docs/v3.5/op-guide/maintenance/), compaction, defrag, snapshot cadence; closes the loop with M4's etcd-disaster-recovery reading |
 | `kubeadm reset` | [Kubernetes: kubeadm reset](https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-reset/), the cleanup primitive for re-init/re-join during 7b decommission |
 | Ironic cleaning | [Ironic: cleaning steps](https://docs.openstack.org/ironic/latest/admin/cleaning.html), automated + manual cleaning during deprovision |
 | vmetal upgrade surface | [vmetal Configuration](https://vmetal.ai/docs/configuration/) and [vmetal Limitations](https://vmetal.ai/docs/limitations/), what vmetal opinionates on cluster upgrades vs. defers to CAPI; if the docs don't cover an upgrade primitive you expected, that's a *vmetal sharp edge* (see M6 `sharp-edges.md`), record it in your 7a notes |

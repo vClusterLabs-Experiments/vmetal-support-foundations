@@ -29,10 +29,10 @@ Induce five failures. For each, record:
 | # | Failure to induce | Hint |
 |---|---|---|
 | 1 | BMC unreachable | Stop sushy-tools, attempt power-on |
-| 2 | DHCP misconfiguration | Wrong `next-server`, observe firmware behavior |
+| 2 | DHCP misconfiguration | Wrong `next-server`, observe firmware behavior. See [Wireshark: DHCP](https://wiki.wireshark.org/DHCP) for reading the trace. |
 | 3 | Bad iPXE script | Typo in URL, observe where the chain breaks |
-| 4 | Bad cloud-init user-data | Two sub-cases: (a) installer-stage failure (e.g., bad `autoinstall:` shape, install never completes); (b) target-stage failure (e.g., bad nested `runcmd` or unparseable `write_files` content, install completes but `cloud-init status --long` reports `error` after first boot). Distinguish them. |
-| 5 | Node provisions, kubelet won't start | cloud-init `runcmd` ran `kubeadm init` (or `join`) and exited 0, but kubelet crashloops. Common causes: containerd cgroup driver mismatch, missing kernel module, swap not actually disabled, CRI socket mismatch. The fingerprint here is "cloud-init says success, `kubectl get nodes` never sees the node." |
+| 4 | Bad cloud-init user-data | Two sub-cases: (a) installer-stage failure (e.g., bad `autoinstall:` shape, install never completes); (b) target-stage failure (e.g., bad nested `runcmd` or unparseable `write_files` content, install completes but `cloud-init status --long` reports `error` after first boot). Distinguish them. See [cloud-init: Debugging cloud-init](https://cloudinit.readthedocs.io/en/latest/howto/debug_user_data.html) and [Subiquity logs](https://canonical-subiquity.readthedocs-hosted.com/en/latest/intro-to-autoinstall.html) for the two log surfaces. |
+| 5 | Node provisions, kubelet won't start | cloud-init `runcmd` ran `kubeadm init` (or `join`) and exited 0, but kubelet crashloops. Common causes: containerd cgroup driver mismatch, missing kernel module, swap not actually disabled, CRI socket mismatch. The fingerprint here is "cloud-init says success, `kubectl get nodes` never sees the node." See [Debugging Kubernetes nodes with crictl](https://kubernetes.io/docs/tasks/debug/debug-cluster/crictl/) and [Troubleshooting clusters](https://kubernetes.io/docs/tasks/debug/debug-cluster/) for the kubelet/containerd log surface. |
 
 ## Diagnostic surfaces to learn
 
@@ -49,7 +49,9 @@ Induce five failures. For each, record:
 | Cluster join | apiserver audit log + kubelet logs | `kubectl get events -A`, `kubectl describe node <name>`, `kubectl get csr` for pending TLS bootstrap CSRs |
 | Recovery primitive | the node itself, before re-PXE | `kubeadm reset -f`, `cloud-init clean --logs --seed`, then re-provision. Without one of these, re-runs hit half-converged state. |
 
-## Reading list
+The table above tells you *where to look*; the Reference index below tells you *what to read* when the symptom is unfamiliar. Each layer has a corresponding entry.
+
+## Reference index
 
 | Topic | Source |
 |---|---|

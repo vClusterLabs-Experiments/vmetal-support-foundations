@@ -30,7 +30,7 @@ Lima VM
 └── sushy-tools                <-- the BMC
 ```
 
-## Reading list
+## Reference index
 
 | Topic | Source |
 |---|---|
@@ -50,12 +50,16 @@ Lima VM
 
 1. **`node01` is a single-node Kubernetes control plane via `kubeadm init`.** Cloud-init's `runcmd` invoked `kubeadm init --config=/etc/kubernetes/kubeadm-init.yaml` on first boot. From the Lima host (or from `node01` itself with the admin kubeconfig), `kubectl get nodes` shows `node01` `Ready` once Calico finishes coming up.
 2. **Calico is installed.** `kubectl get pods -n kube-system` and `kubectl get pods -n calico-system` (or `kube-system`, depending on the manifest you applied) show the Calico controller and per-node `calico-node` pods Running. `node01` flips to `Ready` only after Calico's CNI plugin lands on disk.
+   **Reference:** [Calico: Quickstart for Calico on Kubernetes](https://docs.tigera.io/calico/latest/getting-started/kubernetes/quickstart), the manifest install and the `192.168.0.0/16` pod CIDR you matched in `kubeadm-init.yaml`.
 3. **PXE-provision `node02` from cold.** Redfish power-on → DHCP → iPXE → Ubuntu netboot → autoinstall → reboot → cloud-init `runcmd` invokes `kubeadm join`. The worker's user-data is the M3 payload extended with the `kubeadm join` line, including the API server endpoint, the bootstrap token, and the discovery CA cert hash you got from the control plane.
+   **Reference:** [Kubernetes: kubeadm join](https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-join/), the worker side of the handshake and the flags `--token` / `--discovery-token-ca-cert-hash` your `runcmd` passes.
 4. **`node02` joins the cluster and shows up as `Ready`.** `kubectl get nodes` shows two nodes. `kubectl run` schedules a Pod that lands on the worker.
 5. **Reboot the worker via Redfish.** It rejoins automatically, kubelet uses the kubeconfig `kubeadm join` wrote, NOT the bootstrap token (which was one-shot, single-use, short-lived). Verify by watching `kubectl get nodes` go `NotReady` then `Ready` without you touching tokens.
 6. **Break it on purpose, three ways:**
    - **Wrong CA hash.** Edit the worker's user-data to use a `--discovery-token-ca-cert-hash sha256:0000…0000`. Reprovision. Watch `kubeadm join` fail. Identify the line in `cloud-init-output.log` and the kubeadm error that pinpoints "the discovery server's CA does not match the expected hash."
+     **Reference:** [Kubernetes: Kubelet TLS bootstrapping](https://kubernetes.io/docs/reference/access-authn-authz/kubelet-tls-bootstrapping/), the discovery-CA verification step that this failure trips.
    - **Expired token.** Wait 24h (or set `--ttl 5m` and wait), then try to join a new node with the stale token. Identify the failure path.
+     **Reference:** [Kubernetes: Bootstrap tokens](https://kubernetes.io/docs/reference/access-authn-authz/bootstrap-tokens/), TTL semantics and the auth failure shape when the token has expired.
    - **Missing CNI.** Skip the Calico install on a fresh `kubeadm init`. Watch `node01` stay `NotReady`. `kubectl describe node node01` should call out the missing pod network. Install Calico; watch the node go `Ready`.
 
 ## Reference: the cloud-init payload that makes `kubeadm init` succeed
@@ -129,6 +133,8 @@ autoinstall:
       - containerd config default > /etc/containerd/config.toml
       - sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
       # Kubernetes apt repo (pinned to v1.35; bump per the version you're teaching).
+      # Reference: https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
+      # The `pkgs.k8s.io` host serves per-minor-version repos; legacy `apt.kubernetes.io` is frozen.
       - install -d -m 0755 /etc/apt/keyrings
       - curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.35/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
       - echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.35/deb/ /' > /etc/apt/sources.list.d/kubernetes.list
@@ -182,6 +188,7 @@ Paste the output into the worker user-data, serve it, then PXE the worker. The t
 - **`controlPlaneEndpoint` day 1.** Set it on the first `kubeadm init`, even on a single-CP cluster. Adding it later requires regenerating apiserver cert SANs and updating kubeconfigs across the cluster. `node01.lab:6443` works in this lab if dnsmasq resolves it; an IP works too.
 - **CRI socket.** kubeadm auto-detects when only one runtime is installed. Setting `nodeRegistration.criSocket` explicitly removes ambiguity for the lab and matches what real ops teams pin.
 - **Cgroup driver.** kubeadm defaults kubelet to the `systemd` cgroup driver. containerd MUST match (`SystemdCgroup = true`). Mismatch produces a kubelet that crashloops with vague kubelet logs and `kubeadm init` running well past the preflight check before failing, costly to diagnose if you don't know the trap.
+  **Reference:** [Kubernetes: Container runtimes](https://kubernetes.io/docs/setup/production-environment/container-runtimes/), the `SystemdCgroup` setting and CRI-socket conventions kubelet expects.
 - **Container runtime cgroup config differs across containerd 1.x and 2.x.** The `sed` line above targets containerd 1.x. On containerd 2.x the `[plugins.'io.containerd.cri.v1.runtime'.containerd.runtimes.runc.options]` block is what you edit. Pin the containerd version in your reading list and stay consistent.
 - **CNI is a separate manifest apply.** Until Calico's manifest is applied and `calico-node` reaches `Ready`, `node01` itself will report `NotReady` (the kubelet condition `NetworkPluginNotReady` blocks it). This is normal. Watch the transition once so you recognize it.
 

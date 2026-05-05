@@ -33,22 +33,27 @@ This is one-time work; you'll reuse the same Lima VM through M7. None of it is t
 
 1. **Lima VM with Ubuntu.** Install Lima; launch an Ubuntu VM with enough disk and CPU for QEMU inside it.
    *Verify:* `limactl list` shows the VM `Running`; `limactl shell <name>` drops you into a shell.
+   **Reference:** [lima-vm.io: Getting started](https://lima-vm.io/docs/), the minimum to launch one Ubuntu VM.
 2. **libvirt + QEMU inside the VM.** Install via apt; enable and start `libvirtd`; add your user to the `libvirt` group.
    *Verify:* `virsh list --all` returns without errors.
+   **Reference:** [libvirt.org](https://libvirt.org/docs.html), skim only the install + `virsh` basics.
 3. **Isolated libvirt network + `node01` domain.** Define an isolated network (no DHCP, no NAT, pure L2) and a libvirt domain `node01` with one NIC on that network, no disk, and boot order `network,hd`.
    *Verify:* `virsh net-list` shows the network active; `virsh dumpxml node01` shows the NIC bound to it.
 4. **sushy-tools bound to `node01`.** Install `sushy-tools`; configure the dynamic emulator to drive your libvirt domain via the libvirt URI.
    *Verify:* `curl -u <user>:<pass> http://<lima-ip>:<port>/redfish/v1/Systems/` returns the System tree containing `node01`.
+   **Reference:** [sushy-tools dynamic emulator](https://docs.openstack.org/sushy-tools/latest/user/dynamic-emulator.html), the virtual Redfish BMC that drives a libvirt domain.
 
-If step 4's `curl` returns a System tree, scaffolding is done and the BMC contract work below can begin. Pointers for each step are in the Reading list.
+If step 4's `curl` returns a System tree, scaffolding is done and the BMC contract work below can begin.
 
-## Reading list
+## Reference index
 
 | Topic | Source | Type |
 |---|---|---|
 | BMC vs host responsibility | [OpenBMC: Host management](https://github.com/openbmc/docs/blob/master/host-management.md), sensors, event logs, boot options, host power control, watchdog | (read) |
 | Redfish `Systems` shape | [DMTF Published Mockups](https://redfish.dmtf.org/redfish/mockups/v1), open `public-rackmount1` and click through `Systems/` to see what an HTTP-rendered server looks like | (read) |
-| sushy-tools (the mock you'll run) | [sushy-tools dynamic emulator](https://docs.openstack.org/sushy-tools/latest/user/dynamic-emulator.html), the virtual Redfish BMC that drives a libvirt domain | (read) |
+| Redfish state ownership | [Ironic: Redfish hardware type](https://docs.openstack.org/ironic/latest/admin/drivers/redfish.html), the boot-mode and virtual-media sections make BMC vs. host state ownership concrete | (read) |
+| Async control as a control loop | [Kubernetes: Controllers](https://kubernetes.io/docs/concepts/architecture/controller/), the thermostat-analogy framing for every async API in the curriculum | (read) |
+| sushy-tools (the mock you'll run) | [sushy-tools dynamic emulator](https://docs.openstack.org/sushy-tools/latest/user/dynamic-emulator.html), the virtual Redfish BMC that drives a libvirt domain | (reference) |
 | Lima / libvirt scaffolding | [lima-vm.io](https://lima-vm.io/docs/) and [libvirt.org](https://libvirt.org/docs.html), skim only what you need to define one domain and one network | (reference) |
 
 ## Success criteria
@@ -56,6 +61,7 @@ If step 4's `curl` returns a System tree, scaffolding is done and the BMC contra
 From inside the Lima VM, you should be able to:
 
 1. Show your fake server in the Redfish tree: `GET /redfish/v1/Systems/`.
+   **Reference:** [DMTF Published Mockups](https://redfish.dmtf.org/redfish/mockups/v1), open `public-rackmount1` to see what a populated `Systems/` tree should look like.
 2. Read its current `PowerState` via Redfish.
 3. Power it on with a Redfish action; verify the libvirt domain is running.
 4. Demonstrate idempotence: the same calls drive the host to the desired state from any starting state.

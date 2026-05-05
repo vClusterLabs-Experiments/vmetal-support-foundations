@@ -34,7 +34,7 @@ Lima VM
 └── sushy-tools
 ```
 
-## Reading list
+## Reference index
 
 | Topic | Source |
 |---|---|
@@ -48,8 +48,10 @@ Read the docs *before* installing. Form a hypothesis about what each CRD does ba
 ## Success criteria
 
 1. vmetal installed cleanly on the M5 management cluster.
+   **Reference:** [vmetal docs](https://vmetal.ai/docs), the install path and any prerequisites your M5 management cluster needs to satisfy.
 2. Hand-drawn or text diagram showing every running pod and its role.
 3. **CRD mapping table**: for each vmetal CRD, identify whether it (a) replaces a CAPI/Metal3 primitive, (b) wraps one, or (c) is net-new with no analog. Justify each classification.
+   **Reference:** Runtime: `kubectl api-resources | grep -i vmetal`, `kubectl get crd | grep -i vmetal`, and `kubectl explain <kind>.spec --recursive`. Form a hypothesis from the schema before consulting controller code.
 4. Provision a workload cluster *via vmetal* using the same fake nodes from M5. Compare the manifest you wrote to the M5 manifest, what changed, what got simpler, what got more opinionated?
 5. Tear it down. Re-provision with a different config (different K8s version, different node roles). Note what vmetal makes easy that was painful in M5.
 6. **Find a sharp edge**: induce a failure that vmetal handles, and one it doesn't. The latter is your map of where the abstraction leaks.
