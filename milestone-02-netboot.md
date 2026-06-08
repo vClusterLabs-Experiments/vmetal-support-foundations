@@ -52,6 +52,13 @@ The BMC and the server are the same scaffolding you built in M1. The new layer i
 
 Steps 1–2 are Milestone 1. Steps 3–10 are this milestone. Every layer above (OS install, cluster bootstrap, vmetal) is a variation on step 9.
 
+> **arm64 note:** The chain above assumes BIOS-era PXE, where step 4 is a DHCP broadcast from the NIC ROM's built-in PXE stack. arm64 UEFI has no legacy BIOS PXE. On arm64, the realistic boot paths are:
+>
+> 1. **UEFI HTTP boot** -- the UEFI firmware fetches a bootloader over HTTP, directed by DHCP options or UEFI boot variables. Similar concept to iPXE, different wire format.
+> 2. **Redfish virtual media** -- the BMC hot-attaches an ISO as a virtual CD; the UEFI firmware boots it. This is the path Metal3/vmetal use in production and what M5 uses in this lab.
+>
+> Work through M2 for the conceptual grounding (DHCP as a control plane, why iPXE exists, the handshake structure). When you reach M5 and Metal3, the delivery mechanism will be virtual media, not dnsmasq + TFTP. The concepts carry over; the wire protocol at the bottom differs.
+
 ## Reference index
 
 | Topic | Source |

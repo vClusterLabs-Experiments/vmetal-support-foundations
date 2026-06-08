@@ -43,6 +43,45 @@ The Lima VM hosts a Kubernetes management cluster (in kind/k3s) whose only job i
 >
 > **Linkback to M3:** keep your `seed/user-data` from M3 open in a second pane. You'll be diffing it against the Secret CABPK generates.
 
+## arm64 specifics (Apple Silicon)
+
+Five things differ from the Metal3 docs, which assume amd64:
+
+**1. No prebuilt aarch64 IPA upstream.**
+Metal3's Ironic Python Agent ramdisk only ships amd64 binaries. Build an arm64 IPA using `ironic-python-agent-builder` (Debian bookworm, `ARCH=arm64`). Build time: ~15 minutes on first run. Cache the result on your host; you only pay once per version.
+
+**2. Metal3 container images are amd64-only.**
+BMO, Ironic, and ipa-downloader have no arm64 manifest. Enable Rosetta in your Lima VM; it translates amd64 containers transparently and kind needs no extra flags:
+
+```yaml
+# in lima.yaml (already set if you followed the README)
+rosetta:
+  enabled: true
+  binfmt: true   # registers x86_64 binfmt_misc handler kernel-globally
+```
+
+Prefer Rosetta over `qemu-user-static`; qemu-user-static SIGSEGV'd on Ironic probes in testing.
+
+**3. `BareMetalHost` requires arm64 UEFI fields.**
+Three fields differ from the amd64 defaults. Set them on every `BareMetalHost`:
+
+```yaml
+spec:
+  architecture: aarch64          # drives Ironic to select BOOTAA64.EFI for the boot ISO
+  bootMode: UEFI
+  automatedCleaningMode: disabled # disk erase is too slow under nested KVM; skip it
+```
+
+**4. UEFI firmware: use the non-secureboot variant.**
+Your libvirt domain needs `AAVMF_CODE.no-secboot.fd` as the UEFI loader. The `.ms` secure-boot variant rejects unsigned `BOOTAA64.EFI` with "Security Violation" and drops to the EFI shell.
+
+```bash
+apt-get install -y ovmf qemu-efi-aarch64  # provides AAVMF_CODE.no-secboot.fd
+```
+
+**5. CD controller: `virtio-scsi`, not LSI.**
+Ironic attaches the IPA ramdisk ISO as a virtual media CD. AAVMF has a VirtioScsiDxe driver but cannot see the LSI controller libvirt creates by default. Set `type=scsi,model=virtio-scsi` on the domain's controller; otherwise the VM drops to the EFI shell at boot.
+
 ## Reference index
 
 | Topic | Source |

@@ -23,9 +23,19 @@ Mac (Apple Silicon)
 
 In production this whole box collapses into: a real server with a real BMC chip on a real management network. The Redfish API surface is identical.
 
-## Apple Silicon constraint
+## Apple Silicon notes
 
-No nested KVM, so inner VMs run under TCG (software emulation). Pick one guest arch and stick with it across all milestones. Recommendation: **x86_64**, because vmetal/Metal3/Ubuntu cloud-image docs assume amd64 by default. Slow but tolerable for 1–3 nodes.
+**M3+/M4 Macs, Lima 2.0+:** Lima's `vmType: vz` enables nested KVM via Apple Virtualization Framework. Run arm64 throughout -- it is faster, and arm64 is what vmetal runs on in production AI Clouds. Verify nested KVM is active after `limactl start`: `virsh domcapabilities | grep -A1 '<domain>'` should show `kvm`.
+
+**Older or Intel Macs:** fall back to `vmType: qemu` with `arch: x86_64` and accept TCG emulation speeds. 1--3 nodes is workable.
+
+**One-time gotcha (`/dev/kvm` group race):** across Lima VM reboots, a udev race between the `lxd` and `kvm` groups can leave `/dev/kvm` unreadable by QEMU. QEMU then fails with "Could not access KVM kernel module: Permission denied". Fix it once in your Lima VM provisioning script so it survives reboots:
+
+```bash
+echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666"' \
+  | sudo tee /etc/udev/rules.d/99-kvm-permissions.rules
+sudo udevadm control --reload-rules && sudo udevadm trigger --name-match=kvm
+```
 
 ## Pre-flight: scaffolding setup
 

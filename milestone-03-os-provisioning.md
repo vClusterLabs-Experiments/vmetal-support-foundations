@@ -61,6 +61,8 @@ Both runs leave logs at `/var/log/cloud-init.log`, but on different rootfses. SS
 
 Steps 1–3 are M1/M2. Steps 4–11 are this milestone. Every layer above (cluster bootstrap, vmetal) is a variation on what cloud-init runs in steps 10–11.
 
+> **arm64 delivery note:** Steps 1--3 above use BIOS PXE, which is unavailable on arm64 UEFI. On arm64, the kernel/initrd and cloud-init seed arrive via UEFI HTTP boot or Redfish virtual media instead. The cloud-init `user-data`/`meta-data` shape and Subiquity autoinstall semantics are identical either way -- the same `ds=nocloud-net;s=http://...seed/` kernel argument applies. In M5, Ironic delivers the cloud-init payload as a ConfigDrive partition on disk rather than over HTTP; the document itself is unchanged.
+
 ## Reference index
 
 | Topic | Source |

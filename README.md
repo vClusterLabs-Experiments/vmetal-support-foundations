@@ -48,8 +48,25 @@ The two `.5` interludes are not enrichment, they are load-bearing. M5 will assum
 ## Apple Silicon notes
 
 - All work happens inside one Lima VM running Ubuntu.
-- Inner VMs run x86_64 under TCG (no nested KVM on M-series). Slow but workable for 1–3 fake nodes.
-- Don't try to scale node count past what TCG can comfortably handle; the lab is for understanding the contract, not perf.
+- **M3+/M4 Macs, Lima 2.0+:** Lima's `vmType: vz` (Apple Virtualization Framework) enables nested KVM. Inner VMs run arm64-native at near-bare-metal speed. Use arm64 throughout; it matches what vmetal runs on in production AI Clouds.
+- **Older or Intel Macs:** fall back to `vmType: qemu` with `arch: x86_64` and accept TCG emulation speeds. 1--3 fake nodes is workable.
+- Verify nested KVM is active: `virsh domcapabilities | grep -A1 '<domain>'` should show `kvm`.
+
+**Lima VM config for this lab** (create a `lima.yaml` before `limactl start`):
+
+```yaml
+vmType: vz
+nestedVirtualization: true    # enables /dev/kvm inside the VM
+rosetta:
+  enabled: true
+  binfmt: true                # needed in M5 for Metal3 amd64-only images
+cpus: 8
+memory: 16GiB
+disk: 80GiB                   # IPA build + nested VMs need the headroom
+images:
+  - location: "https://cloud-images.ubuntu.com/releases/24.04/release/ubuntu-24.04-server-cloudimg-arm64.img"
+    arch: aarch64
+```
 
 ## Directory layout
 
